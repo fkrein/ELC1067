@@ -23,11 +23,24 @@ int main(int argc, char *argv[]){
     int mat_notas[QTDD_MAX] = {0};
     float medias[QTDD_MAX] = {0};
     char nomes[QTDD_MAX][TNOME];
+    char pesquisa[TNOME];
+
+    char *ch_ptr;
+    int i, len=0;
+    for(i=1;i<argc;i++){
+        ch_ptr = argv[i];
+        strcpy(&pesquisa[len],ch_ptr);
+        len += strlen(ch_ptr);
+        if(i!=(argc-1)){
+            pesquisa[len]=' ';
+            len++;
+        }
+    }
 
     if(argc>1){
-        alunos();
-        notas();
-        busca();
+        alunos(mat_alunos,nomes);
+        notas(mat_notas,medias);
+        busca(mat_alunos,nomes,mat_notas,medias,pesquisa);
     }else{
         printf("Parametro de busca nao especificado!");
     }
