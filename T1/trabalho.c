@@ -62,7 +62,7 @@ void alunos(int mat_alunos[], char nomes[][TNOME]){
         exit(0);
     }else{
         while(feof(ptr)==0){
-            if(fscanf(ptr,"%d",&mat_alunos[cont]) == 0){
+            if(fscanf(ptr,"%d",&mat_alunos[cont]) != 1){
                 printf("Arquivo invalido!");
                 fclose(ptr);
                 exit(0);
@@ -87,12 +87,34 @@ void alunos(int mat_alunos[], char nomes[][TNOME]){
         }
     }
     fclose(ptr);
+
 }
 
 void notas(int mat_notas[], float medias[]){
 
+    int cont=0;
+    float nota1, nota2;
+    FILE *ptr = fopen(NOTAS,"r");
+    if(ptr == NULL){
+        printf("Caminho de arquivo invalido!");
+        fclose(ptr);
+        exit(0);
+    }else{
+        while(feof(ptr)==0){
+            if(fscanf(ptr,"%d %f %f",&mat_notas[cont],&nota1,&nota2) != 3){
+                printf("Arquivo invalido!");
+                fclose(ptr);
+                exit(0);
+            }
+            medias[cont++]=(nota1+nota2)/2;
+        }
+    }
+    fclose(ptr);
+
 }
 
 void busca(int mat_alunos[], char nomes[][TNOME], int mat_notas[], float medias[], char pesquisa[]){
+
+
 
 }
