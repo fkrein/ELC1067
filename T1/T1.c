@@ -7,24 +7,25 @@
 #define NOTAS "notas.txt"
 
 void alunos(int mat_alunos[], char nomes[][TNOME]);
-//Lê o arquivo "alunos.txt" e salva os dados dele em vetores
-//Recebe o vetor "mat_alunos" e salva dentro dele as matrículas
-//Recebe a matriz "nomes" e salva dentro dela os nomes
+//Lê o arquivo "alunos.txt" e salva os dados dele
+//Recebe o vetor "mat_alunos" e salva dentro dele as matrículas lidas
+//Recebe a matriz "nomes" e salva dentro dela os nomes lidos
 
 void notas(int mat_notas[], float medias[]);
-//Lê o arquivo "notas.txt" e salva os dados dele em vetores
-//Recebe o vetor "mat_notas" e salva dentro dele as matrículas
-//Recebe o vetor "medias" e salva dentro dele as médias das notas
+//Lê o arquivo "notas.txt" e salva os dados dele
+//Recebe o vetor "mat_notas" e salva dentro dele as matrículas lidas
+//Recebe o vetor "medias" e salva dentro dele as médias das notas lidas
 
 void busca(int mat_alunos[], char nomes[][TNOME], int mat_notas[], float medias[], char pesquisa[]);
-//Busca um nome dentro do vetor "nomes" e salva sua matrícula
-//Busca essa matrícula em "mat_notas" e imprime o nome e a nota
+//Recebe 4 vetores contendo as matrículas, nomes e notas dos alunos
+//Recebe o vetor "pesquisa" e executa uma busca de seu conteúdo dentor do vetor "nomes"
+//Imprime os valores do vetor "medias" seguidos dos respectivos nomes
 
 int main(int argc, char *argv[]){
 
     int mat_alunos[QTDD_MAX] = {0};
     int mat_notas[QTDD_MAX] = {0};
-    float medias[QTDD_MAX] = {0};
+    float medias[QTDD_MAX];
     char nomes[QTDD_MAX][TNOME];
     char pesquisa[TNOME];
 
@@ -40,14 +41,17 @@ int main(int argc, char *argv[]){
         }
     }
 
-    if(argc>1){
+    for(i=0;i<strlen(pesquisa);i++){
+        if((pesquisa[i]<'A' || (pesquisa[i]>'Z' && pesquisa[i]<'a') || pesquisa[i]>'z') && (pesquisa[i]!=' ' && pesquisa[i]!='-')){
+            printf("Parametro invalido!");
+            exit(0);
+        }
+    }
+
         alunos(mat_alunos,nomes);
         notas(mat_notas,medias);
-        strcpy(pesquisa, strupr(pesquisa));
+        strcpy(pesquisa, pesquisa);
         busca(mat_alunos,nomes,mat_notas,medias,pesquisa);
-    }else{
-        printf("Parametro de busca nao especificado!");
-    }
 
     return 0;
 
@@ -78,9 +82,9 @@ void alunos(int mat_alunos[], char nomes[][TNOME]){
             }
             i = 0;
             while(c!='\n' && c!=EOF){
-                nomes[cont][i]=toupper(c);
-                if((nomes[cont][i]<'A' || nomes[cont][i]>'Z') && nomes[cont][i] != ' ' && nomes[cont][i] != '-'){
-                    printf("Nome no arquivo errado!");
+                nomes[cont][i]=c;
+                if((nomes[cont][i]<'A' || (nomes[cont][i]>'Z' && nomes[cont][i]<'a') || nomes[cont][i]>'z') && (nomes[cont][i]!=' ' && nomes[cont][i]!='-')){
+                    printf("Arquivo Invalido!");
                     fclose(ptr);
                     exit(0);
                 }
@@ -91,7 +95,6 @@ void alunos(int mat_alunos[], char nomes[][TNOME]){
             cont++;
         }
     }
-    mat_alunos[cont] = -1;
     fclose(ptr);
 
 }
@@ -115,18 +118,23 @@ void notas(int mat_notas[], float medias[]){
             medias[cont++]=(nota1+nota2)/2;
         }
     }
-    mat_notas[cont] = -1;
     fclose(ptr);
 
 }
 
 void busca(int mat_alunos[], char nomes[][TNOME], int mat_notas[], float medias[], char pesquisa[]){
 
-    int i=0,j;
-    while(mat_alunos[i] != -1){
-        if(strstr(nomes[i],pesquisa) != NULL){
+    int i=0,j,upr;
+    char upr_nomes[TNOME];
+    char upr_pesquisa[TNOME];
+    strcpy(upr_pesquisa,pesquisa);
+    strupr(upr_pesquisa);
+    while(mat_alunos[i] != 0){
+        strcpy(upr_nomes,nomes[i]);
+        strupr(upr_nomes);
+        if(strstr(upr_nomes,upr_pesquisa) != NULL){
             j=0;
-            while(mat_notas[j] != -1){
+            while(mat_notas[j] != 0){
                 if(mat_alunos[i]==mat_notas[j]){
                     printf("%.2f %s\n",medias[j],nomes[i]);
                 }
