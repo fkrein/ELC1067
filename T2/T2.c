@@ -3,11 +3,11 @@
 #include <string.h>
 #include <ctype.h>
 #define TNOME 50
-#define QTDD_MAX 50
+#define QTDD_MAX 10
 #define ALUNOS "alunos.txt"
 #define NOTAS "notas.txt"
 
-void alunos(int *mat_alunos, char **nomes);
+int alunos(int *mat_alunos, char **nomes);
 //Lê o arquivo "alunos.txt" e salva os dados dele
 //Recebe o vetor "mat_alunos" e salva dentro dele as matrículas lidas
 //Recebe a matriz "nomes" e salva dentro dela os nomes lidos
@@ -24,7 +24,7 @@ void busca(int *mat_alunos, char **nomes, int *mat_notas, float *medias, char *p
 
 int main(int argc, char *argv[]){
 
-    int i;
+    int i,n;
     int *mat_alunos = (int*) malloc(QTDD_MAX*sizeof(int));
     int *mat_notas = (int*) malloc(QTDD_MAX*sizeof(int));
     float *medias = (float*) malloc(QTDD_MAX*sizeof(float));
@@ -60,16 +60,24 @@ int main(int argc, char *argv[]){
         }
     }
 
-        alunos(mat_alunos,nomes);
-        notas(mat_notas,medias);
-        strcpy(pesquisa, pesquisa);
-        busca(mat_alunos,nomes,mat_notas,medias,pesquisa);
+    n=alunos(mat_alunos,nomes);
+    notas(mat_notas,medias);
+    strcpy(pesquisa, pesquisa);
+    busca(mat_alunos,nomes,mat_notas,medias,pesquisa);
+
+    free(mat_alunos);
+    free(mat_notas);
+    free(medias);
+    for(i=0;i<n;i++){
+        free(nomes[i]);
+    }
+    free(nomes);
 
     return 0;
 
 }
 
-void alunos(int *mat_alunos, char **nomes){
+int alunos(int *mat_alunos, char **nomes){
 
     int cont=0, i, mat;
     char c='\n';
@@ -81,6 +89,13 @@ void alunos(int *mat_alunos, char **nomes){
         exit(0);
     }else{
         while(feof(ptr)==0){
+            if(cont%QTDD_MAX==0){
+                mat_alunos = (int*) realloc(mat_alunos,(sizeof(int)*cont)+(QTDD_MAX*sizeof(int)));
+                nomes = (char**) realloc(nomes,sizeof(char*)*cont+QTDD_MAX*sizeof(char*));
+                for(i=cont;i<cont+QTDD_MAX;i++){
+                    nomes[i] = (char*) malloc(TNOME*sizeof(char));
+                }
+            }
             if(fscanf(ptr,"%d",&mat) != 1){
                 printf("Arquivo invalido!");
                 fclose(ptr);
@@ -108,7 +123,7 @@ void alunos(int *mat_alunos, char **nomes){
         }
     }
     fclose(ptr);
-
+    return cont;
 }
 
 void notas(int *mat_notas, float *medias){
@@ -122,6 +137,10 @@ void notas(int *mat_notas, float *medias){
         exit(0);
     }else{
         while(feof(ptr)==0){
+            if(cont%QTDD_MAX==0){
+                mat_notas = (int*) realloc(mat_notas,(sizeof(int)*cont)+(QTDD_MAX*sizeof(int)));
+                medias = (float*) realloc(medias,(sizeof(float)*cont)+(QTDD_MAX*sizeof(float)));
+            }
             if(fscanf(ptr,"%d %f %f ",&mat_notas[cont],&nota1,&nota2) != 3){
                 printf("Arquivo invalido!");
                 fclose(ptr);
@@ -136,7 +155,7 @@ void notas(int *mat_notas, float *medias){
 
 void busca(int *mat_alunos, char **nomes, int *mat_notas, float *medias, char *pesquisa){
 
-    int i=0,j,upr;
+    int i=0,j;
     char upr_nomes[TNOME];
     char upr_pesquisa[TNOME];
     strcpy(upr_pesquisa,pesquisa);
@@ -155,5 +174,4 @@ void busca(int *mat_alunos, char **nomes, int *mat_notas, float *medias, char *p
         }
         i++;
     }
-
 }
