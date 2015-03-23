@@ -7,31 +7,42 @@
 #define ALUNOS "alunos.txt"
 #define NOTAS "notas.txt"
 
-void alunos(int mat_alunos[], char nomes[][TNOME]);
+void alunos(int *mat_alunos, char **nomes);
 //Lê o arquivo "alunos.txt" e salva os dados dele
 //Recebe o vetor "mat_alunos" e salva dentro dele as matrículas lidas
 //Recebe a matriz "nomes" e salva dentro dela os nomes lidos
 
-void notas(int mat_notas[], float medias[]);
+void notas(int *mat_notas, float *medias);
 //Lê o arquivo "notas.txt" e salva os dados dele
 //Recebe o vetor "mat_notas" e salva dentro dele as matrículas lidas
 //Recebe o vetor "medias" e salva dentro dele as médias das notas lidas
 
-void busca(int mat_alunos[], char nomes[][TNOME], int mat_notas[], float medias[], char pesquisa[]);
+void busca(int *mat_alunos, char **nomes, int *mat_notas, float *medias, char *pesquisa);
 //Recebe 4 vetores contendo as matrículas, nomes e notas dos alunos
 //Recebe o vetor "pesquisa" e executa uma busca de seu conteúdo dentor do vetor "nomes"
 //Imprime os valores do vetor "medias" seguidos dos respectivos nomes
 
 int main(int argc, char *argv[]){
 
-    int mat_alunos[QTDD_MAX] = {0};
-    int mat_notas[QTDD_MAX] = {0};
-    float medias[QTDD_MAX];
-    char nomes[QTDD_MAX][TNOME];
+    int i;
+    int *mat_alunos = (int*) malloc(QTDD_MAX*sizeof(int));
+    int *mat_notas = (int*) malloc(QTDD_MAX*sizeof(int));
+    float *medias = (float*) malloc(QTDD_MAX*sizeof(float));
+    char **nomes = (char**) malloc(QTDD_MAX*sizeof(char*));
     char pesquisa[TNOME];
-
     char *ch_ptr;
-    int i, len=0;
+    int len=0;
+
+    for(i=0;i<QTDD_MAX;i++){
+        mat_alunos[i]=0;
+    }
+    for(i=0;i<QTDD_MAX;i++){
+        mat_notas[i]=0;
+    }
+    for(i=0;i<QTDD_MAX;i++){
+        nomes[i] = (char*) malloc(TNOME*sizeof(char));
+    }
+
     for(i=1;i<argc;i++){
         ch_ptr = argv[i];
         strcpy(&pesquisa[len],ch_ptr);
@@ -58,7 +69,7 @@ int main(int argc, char *argv[]){
 
 }
 
-void alunos(int mat_alunos[], char nomes[][TNOME]){
+void alunos(int *mat_alunos, char **nomes){
 
     int cont=0, i, mat;
     char c='\n';
@@ -100,7 +111,7 @@ void alunos(int mat_alunos[], char nomes[][TNOME]){
 
 }
 
-void notas(int mat_notas[], float medias[]){
+void notas(int *mat_notas, float *medias){
 
     int cont=0;
     float nota1, nota2;
@@ -123,7 +134,7 @@ void notas(int mat_notas[], float medias[]){
 
 }
 
-void busca(int mat_alunos[], char nomes[][TNOME], int mat_notas[], float medias[], char pesquisa[]){
+void busca(int *mat_alunos, char **nomes, int *mat_notas, float *medias, char *pesquisa){
 
     int i=0,j,upr;
     char upr_nomes[TNOME];
