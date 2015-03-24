@@ -3,7 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #define TNOME 50
-#define QTDD_MAX 10
+#define QTDD_MAX 50
 #define ALUNOS "alunos.txt"
 #define NOTAS "notas.txt"
 
@@ -21,6 +21,9 @@ void busca(int *mat_alunos, char **nomes, int *mat_notas, float *medias, char *p
 //Recebe 4 vetores contendo as matrículas, nomes e notas dos alunos
 //Recebe o vetor "pesquisa" e executa uma busca de seu conteúdo dentor do vetor "nomes"
 //Imprime os valores do vetor "medias" seguidos dos respectivos nomes
+
+void strupp(char *str);
+//Deixa uma string upper case
 
 int main(int argc, char *argv[]){
 
@@ -88,16 +91,6 @@ int alunos(int *mat_alunos, char **nomes){
         exit(0);
     }else{
         while(feof(ptr)==0){
-            if(cont%QTDD_MAX==0){
-                mat_alunos = (int*) realloc(mat_alunos,(cont+QTDD_MAX)*sizeof(int));
-                nomes = (char**) realloc(nomes,(cont+QTDD_MAX)*sizeof(char*));
-                for(i=cont;i<cont+QTDD_MAX;i++){
-                    nomes[i] = (char*) malloc(TNOME*sizeof(char));
-                }
-                for(i=cont;i<cont+QTDD_MAX;i++){
-                    mat_alunos[i]=0;
-                }
-            }
             if(fscanf(ptr,"%d",&mat) != 1){
                 printf("Arquivo invalido!");
                 fclose(ptr);
@@ -138,13 +131,6 @@ void notas(int *mat_notas, float *medias){
         exit(0);
     }else{
         while(feof(ptr)==0){
-            if(cont%QTDD_MAX==0){
-                mat_notas = (int*) realloc(mat_notas,(cont+QTDD_MAX)*sizeof(int));
-                medias = (float*) realloc(medias,(cont+QTDD_MAX)*sizeof(float));
-                for(i=0;i<QTDD_MAX;i++){
-                    mat_notas[i]=0;
-                }
-            }
             if(fscanf(ptr,"%d %f %f ",&mat_notas[cont],&nota1,&nota2) != 3){
                 printf("Arquivo invalido!");
                 fclose(ptr);
@@ -164,10 +150,10 @@ void busca(int *mat_alunos, char **nomes, int *mat_notas, float *medias, char *p
     char upr_nomes[TNOME];
     char upr_pesquisa[TNOME];
     strcpy(upr_pesquisa,pesquisa);
-    strupr(upr_pesquisa);
+    strupp(upr_pesquisa);
     while(mat_alunos[i] != 0){
         strcpy(upr_nomes,nomes[i]);
-        strupr(upr_nomes);
+        strupp(upr_nomes);
         if(strstr(upr_nomes,upr_pesquisa) != NULL){
             j=0;
             while(mat_notas[j] != 0){
@@ -178,5 +164,12 @@ void busca(int *mat_alunos, char **nomes, int *mat_notas, float *medias, char *p
             }
         }
         i++;
+    }
+}
+
+void strupp(char *str){
+    int i;
+    for(i=0;i<strlen(str);i++){
+        str[i] = toupper(str[i]);
     }
 }
