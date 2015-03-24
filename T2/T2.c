@@ -74,6 +74,7 @@ int main(int argc, char *argv[]){
         free(nomes[i]);
     }
     free(nomes);
+    free(ch_ptr);
 
     return 0;
 
