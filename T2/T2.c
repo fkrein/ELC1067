@@ -62,7 +62,6 @@ int main(int argc, char *argv[]){
 
     n=alunos(mat_alunos,nomes);
     notas(mat_notas,medias);
-    strcpy(pesquisa, pesquisa);
     busca(mat_alunos,nomes,mat_notas,medias,pesquisa);
 
     free(mat_alunos);
@@ -90,10 +89,13 @@ int alunos(int *mat_alunos, char **nomes){
     }else{
         while(feof(ptr)==0){
             if(cont%QTDD_MAX==0){
-                mat_alunos = (int*) realloc(mat_alunos,(sizeof(int)*cont)+(QTDD_MAX*sizeof(int)));
-                nomes = (char**) realloc(nomes,sizeof(char*)*cont+QTDD_MAX*sizeof(char*));
+                mat_alunos = (int*) realloc(mat_alunos,(cont+QTDD_MAX)*sizeof(int));
+                nomes = (char**) realloc(nomes,(cont+QTDD_MAX)*sizeof(char*));
                 for(i=cont;i<cont+QTDD_MAX;i++){
                     nomes[i] = (char*) malloc(TNOME*sizeof(char));
+                }
+                for(i=cont;i<cont+QTDD_MAX;i++){
+                    mat_alunos[i]=0;
                 }
             }
             if(fscanf(ptr,"%d",&mat) != 1){
@@ -101,7 +103,6 @@ int alunos(int *mat_alunos, char **nomes){
                 fclose(ptr);
                 exit(0);
             }
-
             mat_alunos[cont]=mat;
             c=fgetc(ptr);
             while(c==' '){
@@ -128,7 +129,7 @@ int alunos(int *mat_alunos, char **nomes){
 
 void notas(int *mat_notas, float *medias){
 
-    int cont=0;
+    int cont=0,i;
     float nota1, nota2;
     FILE *ptr = fopen(NOTAS,"r");
     if(ptr == NULL){
@@ -138,15 +139,19 @@ void notas(int *mat_notas, float *medias){
     }else{
         while(feof(ptr)==0){
             if(cont%QTDD_MAX==0){
-                mat_notas = (int*) realloc(mat_notas,(sizeof(int)*cont)+(QTDD_MAX*sizeof(int)));
-                medias = (float*) realloc(medias,(sizeof(float)*cont)+(QTDD_MAX*sizeof(float)));
+                mat_notas = (int*) realloc(mat_notas,(cont+QTDD_MAX)*sizeof(int));
+                medias = (float*) realloc(medias,(cont+QTDD_MAX)*sizeof(float));
+                for(i=0;i<QTDD_MAX;i++){
+                    mat_notas[i]=0;
+                }
             }
             if(fscanf(ptr,"%d %f %f ",&mat_notas[cont],&nota1,&nota2) != 3){
                 printf("Arquivo invalido!");
                 fclose(ptr);
                 exit(0);
             }
-            medias[cont++]=(nota1+nota2)/2;
+            medias[cont]=(nota1+nota2)/2;
+            cont++;
         }
     }
     fclose(ptr);
