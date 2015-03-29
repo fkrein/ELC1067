@@ -46,8 +46,11 @@ vetor_t* vetor_cria(void){
 	vetor_t *vet = (vetor_t*)memo_aloca(sizeof(vetor_t));
 	vet->n = 0;
 	//inicio
+	int i;
     vet->baralho = (carta*)memo_aloca(50*sizeof(carta));
-
+    for(i=0;i<50;i++){
+        vet->baralho[i]=NULL;
+    }
 	//fim
 	return vet;
 }
@@ -63,19 +66,27 @@ int vetor_numelem(vetor_t *vet){
 }
 
 void vetor_insere_carta(vetor_t *vet, int indice, carta c){
-	/* TODO aqui */
+	//início
+
+	//fim
 	vet->n++;
 }
 
 carta vetor_remove_carta(vetor_t *vet, int indice){
-	/* TODO aqui */
+    carta i = vet->baralho[indice];
+    if(i==NULL){
+        return NULL;
+    }
+    while(vet->baralho[indice]!=NULL){
+        vet->baralho[indice] = vet->baralho[indice+1];
+        indice++;
+    }
 	vet->n--;
-	return NULL;
+	return i;
 }
 
 carta vetor_acessa_carta(vetor_t *vet, int indice){
-	/* TODO aqui */
-	return NULL;
+	return vet->baralho[indice];
 }
 
 bool vetor_valido(vetor_t *vet){
