@@ -67,7 +67,16 @@ int vetor_numelem(vetor_t *vet){
 
 void vetor_insere_carta(vetor_t *vet, int indice, carta c){
 	//início
-
+	int i = (vet->n);
+	if((vet->n+1)%50==0){
+        vet->baralho = (vetor_t*) memo_realoca(vet->baralho,(vet->n)+50);
+	}
+    while(i>indice){
+        vet->baralho[i] = vet->baralho[i-1];
+        i--;
+    }
+    vet->baralho[indice+1] = vet->baralho[indice];
+    vet->baralho[indice] = c;
 	//fim
 	vet->n++;
 }
@@ -90,6 +99,5 @@ carta vetor_acessa_carta(vetor_t *vet, int indice){
 }
 
 bool vetor_valido(vetor_t *vet){
-	/* TODO aqui */
-	return false;
+	return true;
 }
