@@ -34,6 +34,8 @@
 #include "carta.h"
 #include "memo.h"
 
+#define QTDD 10
+
 struct vetor {
 	/* TODO aqui */
 	/* defina os campos da TAD vetor aqui */
@@ -48,8 +50,8 @@ vetor_t* vetor_cria(void){
 	vet->aux = 0;
 	//inicio
 	int i;
-    vet->baralho = (carta*)memo_aloca(50*sizeof(carta));
-    for(i=0;i<50;i++){
+    vet->baralho = (carta*)memo_aloca(QTDD*sizeof(carta));
+    for(i=0;i<QTDD;i++){
         vet->baralho[i]=NULL;
     }
 	//fim
@@ -70,9 +72,9 @@ void vetor_insere_carta(vetor_t *vet, int indice, carta c){
 	//início
 	int i = (vet->n);
 	int j;
-	if((vet->n+1)%50==0 && vet->aux!=-1){
-        vet->baralho = (vetor_t*) memo_realoca(vet->baralho,(vet->n)+1+5);
-        for(j=vet->n;j<vet->n+50;j++){
+	if((vet->n+1)%QTDD==0 && vet->aux!=-1){
+        vet->baralho = (carta*) memo_realoca(vet->baralho,((vet->n)+1+QTDD)*sizeof(carta));
+        for(j=vet->n;j<vet->n+QTDD;j++){
             vet->baralho[j]=NULL;
         }
 	}
