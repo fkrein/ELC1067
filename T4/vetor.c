@@ -34,7 +34,7 @@
 #include "carta.h"
 #include "memo.h"
 
-#define QTDD 2
+#define QTDD 100
 
 struct vetor {
 	/* TODO aqui */
