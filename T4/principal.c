@@ -23,11 +23,12 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *///
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <ncurses.h>
 
 #include "memo.h"
 #include "jogo.h"
@@ -40,31 +41,17 @@
 #define TAM 52
 
 void new_game(jogo solit);
+void menu(jogo solit);
 
 int main(void){
 	
 	jogo solit = jogo_cria();
+
 	new_game(solit);
-	//pilha_insere_carta(jogo_monte(solit), carta_cria(AS, OUROS));
-	//pilha_insere_carta(jogo_monte(solit), carta_cria(REI, PAUS));
-	//pilha_insere_carta(jogo_monte(solit), carta_cria(DAMA, COPAS));
-	//pilha_insere_carta(jogo_monte(solit), carta_cria(2, PAUS));
-	//pilha_insere_carta(jogo_monte(solit), carta_cria(10, ESPADAS));
-
 	jogo_desenha(solit);
-	while (!pilha_vazia(jogo_monte(solit))) {
-		carta		c;
-		tela_le(jogo_tela(solit));
+	menu(solit);
 
-		c = pilha_remove_carta(jogo_monte(solit));
-		carta_abre(c);
-		pilha_insere_carta(jogo_descartes(solit), c);
-
-		jogo_desenha(solit);
-	}
-	tela_le(jogo_tela(solit));
 	jogo_destroi(solit);
-
 	memo_relatorio();
 	return 0;
 }
@@ -99,4 +86,12 @@ void new_game(jogo solit){
 	vetor_destroi(cartas);
 }
 
-
+void menu(jogo solit){
+	char origem, destino;
+	int qtdd;
+	do{
+		origem = tela_le(jogo_tela(solit));
+		printw("\n%c",origem);
+		
+	}while(origem != 27);
+}
