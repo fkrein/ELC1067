@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <ncurses.h>
+#include <ctype.h>
 
 #include "memo.h"
 #include "jogo.h"
@@ -42,13 +43,15 @@
 
 void new_game(jogo solit);
 void menu(jogo solit);
+void wq(jogo solit);
+void qw(jogo solit);
+void wx(jogo solit, int indice);
 
 int main(void){
 	
 	jogo solit = jogo_cria();
 
 	new_game(solit);
-	jogo_desenha(solit);
 	menu(solit);
 
 	jogo_destroi(solit);
@@ -84,6 +87,7 @@ void new_game(jogo solit){
 		pilha_insere_carta(jogo_monte(solit), c);
 	}
 	vetor_destroi(cartas);
+	jogo_desenha(solit);
 }
 
 void menu(jogo solit){
@@ -92,6 +96,75 @@ void menu(jogo solit){
 	do{
 		origem = tela_le(jogo_tela(solit));
 		printw("\n%c",origem);
+		switch(origem){
+			case 'q': case 'Q':
+				if(pilha_vazia(solit->monte)){
+					wq(solit);
+				}else{
+					qw(solit);
+				}
+				break;
+			case 'w': case 'W':
+				destino = tela_le(jogo_tela(solit));
+				printw(" %c",destino);
+				switch(destino){
+					case '1': case '2': case '3': case '4': case '5': case '6': case '7':
+						wx(solit,atoi(&destino)-1);
+					//case 'r': case 'R': case 't': case 'T': case 'y': case 'Y': case 'u': case 'U':
+				}
+				break;
+			default:
+				printw(" - Comando Invalido!");
+		}
 		
 	}while(origem != 27);
+}
+
+void wq(jogo solit){
+	carta c;
+	while(!pilha_vazia(solit->descartes)){
+		c = pilha_remove_carta(solit->descartes);
+		carta_fecha(c);
+		pilha_insere_carta(solit->monte,c);
+	}
+	jogo_desenha(solit);
+}
+
+void qw(jogo solit){
+	carta c;
+	c = pilha_remove_carta(solit->monte);
+	carta_abre(c);
+	pilha_insere_carta(solit->descartes,c);
+	jogo_desenha(solit);
+}
+
+void wx(jogo solit, int indice){
+	carta c, cd;
+	int soma;
+	if(pilha_vazia(solit->descartes)){
+		printw(" - Comando Invalido!");
+	}else{
+		c = pilha_remove_carta(solit->descartes);
+		if(pilha_vazia(solit->pilhas[indice])){
+			if(carta_valor(c) == 13){
+				pilha_insere_carta(solit->pilhas[indice],c);
+				jogo_desenha(solit);
+			}else{
+				pilha_insere_carta(solit->descartes,c);
+				printw(" - Comando Invalido!");
+			}
+		}else{
+			cd = pilha_remove_carta(solit->pilhas[indice]);
+			soma = carta_naipe(c) + carta_naipe(cd);
+			if(carta_valor(c) == carta_valor(cd)-1 && carta_naipe(c) != carta_naipe(cd) && soma>=2 && soma<=4){
+				pilha_insere_carta(solit->pilhas[indice],cd);
+				pilha_insere_carta(solit->pilhas[indice],c);
+				jogo_desenha(solit);
+			}else{
+				pilha_insere_carta(solit->descartes,c);
+				pilha_insere_carta(solit->pilhas[indice],cd);
+				printw(" - Comando Invalido!");
+			}
+		}
+	}
 }
