@@ -47,10 +47,29 @@ void wq(jogo solit);
 void qw(jogo solit);
 void wx(jogo solit, int indice);
 void wa(jogo solit, int indice);
+void submenu(jogo solit, int origem);
+void xx(jogo solit, int origem, int destino);
 
 int main(void){
 	
 	jogo solit = jogo_cria();
+	char c;
+
+	printw(" *******  *******           *******  *******  *******  ******* \n");
+	printw(" *     *  *     *           *     *  *     *  *     *  *     * \n");
+	printw(" *  Q  *  *  W  *           *  R  *  *  T  *  *  Y  *  *  U  * \n");
+	printw(" *     *  *     *           *     *  *     *  *     *  *     * \n");
+	printw(" *******  *******           *******  *******  *******  ******* \n");
+	printw("                                                               \n");
+	printw(" *******  *******  *******  *******  *******  *******  ******* \n");
+	printw(" *     *  *     *  *     *  *     *  *     *  *     *  *     * \n");
+	printw(" *  1  *  *  2  *  *  3  *  *  4  *  *  5  *  *  6  *  *  7  * \n");
+	printw(" *     *  *     *  *     *  *     *  *     *  *     *  *     * \n");
+	printw(" *******  *******  *******  *******  *******  *******  ******* \n");
+	printw("\nGame: Solitaire\nDevelopers: João V. Lima, Benhur Stein, Franciel Krein");
+	printw("\n\nPress any key to start!");
+	
+	c = tela_le(jogo_tela(solit));
 
 	new_game(solit);
 	menu(solit);
@@ -93,10 +112,11 @@ void new_game(jogo solit){
 
 void menu(jogo solit){
 	char origem, destino;
-	int qtdd;
+	int valor;
 	do{
 		origem = tela_le(jogo_tela(solit));
 		printw("\n%c",origem);
+		valor = atoi(&origem)-1;
 		switch(origem){
 			case 'q': case 'Q':
 				if(pilha_vazia(solit->monte)){
@@ -133,8 +153,12 @@ void menu(jogo solit){
 						break;
 				}
 				break;
+			case '1': case '2': case '3': case '4': case '5': case '6': case '7':
+				submenu(solit,valor);
+				break;
 			default:
 				tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
+				break;
 		}
 		
 	}while(origem != 27);
@@ -206,6 +230,106 @@ void wa(jogo solit, int indice){
 			pilha_insere_carta(solit->descartes,c);
 			pilha_insere_carta(solit->ases[indice],cd);
 			tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
+		}
+	}
+}
+
+void submenu(jogo solit, int indice){
+	char destino;
+	if(pilha_vazia(solit->pilhas[indice])){
+		tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
+		return;
+	}
+	destino = tela_le(jogo_tela(solit));
+	printw(" %c",destino);
+	if(indice == atoi(&destino)-1){
+		tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
+		return;
+	}
+	switch(destino){
+		case '1': case '2': case '3': case '4': case '5': case '6': case '7':
+			xx(solit,indice,atoi(&destino)-1);
+			break;
+		/*case 'r': case 'R':
+			xa(solit,0);
+			break;
+		case 't': case 'T':
+			xa(solit,1);
+			break;
+		case 'y': case 'Y':
+			xa(solit,2);
+			break;
+		case 'u': case 'U':
+			xa(solit,3);
+			break;
+		default:
+			tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
+			break;*/
+	}
+}
+
+void xx(jogo solit, int origem, int destino){
+	carta c, cd;
+	pilha aux = pilha_cria();
+	char qtd = tela_le(jogo_tela(solit));
+	printw(" %c",qtd);
+	int qtdd = atoi(&qtd);
+	int i, cont=0, soma;
+	for(i=0;i<qtdd;i++){
+		if(!pilha_vazia(solit->pilhas[origem]) && carta_aberta(c)){
+			c = pilha_remove_carta(solit->pilhas[origem]);
+			pilha_insere_carta(aux,c);
+			cont++;
+		}
+	}
+	if(cont != qtdd){
+		while(!pilha_vazia(aux)){
+			c = pilha_remove_carta(aux);
+			pilha_insere_carta(solit->pilhas[origem],c);
+		}
+		tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
+	}else{
+		c = pilha_remove_carta(aux);
+		if(pilha_vazia(solit->pilhas[destino])){
+			if(carta_valor(c) == 13){
+				while(!pilha_vazia(aux)){
+					pilha_insere_carta(solit->pilhas[destino],c);
+					c = pilha_remove_carta(aux);
+				}
+				pilha_insere_carta(solit->pilhas[destino],c);
+				if(!pilha_vazia(solit->pilhas[origem])){
+					c = pilha_remove_carta(solit->pilhas[origem]);
+					carta_abre(c);
+					pilha_insere_carta(solit->pilhas[origem],c);
+				}
+				jogo_desenha(solit);
+			}else{
+				while(!pilha_vazia(aux)){
+					pilha_insere_carta(solit->pilhas[origem],c);
+					c = pilha_remove_carta(aux);
+				}
+				pilha_insere_carta(solit->pilhas[origem],c);
+				tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
+			}
+		}else{
+			cd = pilha_remove_carta(solit->pilhas[destino]);
+			soma = carta_naipe(c) + carta_naipe(cd);
+			if(carta_valor(c) == carta_valor(cd)-1 && carta_naipe(c) != carta_naipe(cd) && soma>=2 && soma<=4){
+				pilha_insere_carta(solit->pilhas[destino],cd);
+				while(!pilha_vazia(aux)){
+					pilha_insere_carta(solit->pilhas[destino],c);
+					c = pilha_remove_carta(aux);
+				}
+				pilha_insere_carta(solit->pilhas[destino],c);
+				jogo_desenha(solit);
+			}else{
+				while(!pilha_vazia(aux)){
+					pilha_insere_carta(solit->pilhas[origem],c);
+					c = pilha_remove_carta(aux);
+				}
+				pilha_insere_carta(solit->pilhas[origem],c);
+				tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
+			}
 		}
 	}
 }
