@@ -269,13 +269,19 @@ void submenu(jogo solit, int indice){
 }
 
 void xx(jogo solit, int origem, int destino){
+
 	carta c, cd;
 	pilha aux = pilha_cria();
-	char qtd = tela_le(jogo_tela(solit));
-	printw(" %c",qtd);
-	int qtdd = atoi(&qtd);
 	int i, cont=0, soma;
-	for(i=0;i<qtdd;i++){
+	//char qtd = tela_le(jogo_tela(solit));
+	//printw(" %c",qtd);
+	//int qtdd = atoi(&qtd);
+
+	if(pilha_vazia(solit->pilhas[destino])){
+		
+	}
+
+	/*for(i=0;i<qtdd;i++){
 		if(!pilha_vazia(solit->pilhas[origem]) && carta_aberta(c)){
 			c = pilha_remove_carta(solit->pilhas[origem]);
 			pilha_insere_carta(aux,c);
@@ -331,5 +337,5 @@ void xx(jogo solit, int origem, int destino){
 				tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
 			}
 		}
-	}
+	}*/
 }
