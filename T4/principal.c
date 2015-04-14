@@ -49,6 +49,8 @@ void wx(jogo solit, int indice);
 void wa(jogo solit, int indice);
 void submenu(jogo solit, int origem);
 void xx(jogo solit, int origem, int destino);
+void xa(jogo solit, int origem, int destino);
+void ax(jogo solit, int origem, int destino);
 
 int main(void){
 	
@@ -116,7 +118,7 @@ void menu(jogo solit){
 	do{
 		origem = tela_le(jogo_tela(solit));
 		printw("\n%c",origem);
-		valor = atoi(&origem)-1;
+		valor = origem-49;
 		switch(origem){
 			case 'q': case 'Q':
 				if(pilha_vazia(solit->monte)){
@@ -156,11 +158,42 @@ void menu(jogo solit){
 			case '1': case '2': case '3': case '4': case '5': case '6': case '7':
 				submenu(solit,valor);
 				break;
+			case 'r': case 'R':
+				if(pilha_vazia(solit->ases[0])){
+					tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
+					break;
+				}
+				destino = tela_le(jogo_tela(solit));
+				printw(" %c",destino);
+				ax(solit,0,destino-49);
+			case 't': case 'T':
+				if(pilha_vazia(solit->ases[1])){
+					tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
+					break;
+				}
+				destino = tela_le(jogo_tela(solit));
+				printw(" %c",destino);
+				ax(solit,1,destino-49);
+			case 'y': case 'Y':
+				if(pilha_vazia(solit->ases[2])){
+					tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
+					break;
+				}
+				destino = tela_le(jogo_tela(solit));
+				printw(" %c",destino);
+				ax(solit,2,destino-49);
+			case 'u': case 'U':
+				if(pilha_vazia(solit->ases[3])){
+					tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
+					break;
+				}
+				destino = tela_le(jogo_tela(solit));
+				printw(" %c",destino);
+				ax(solit,3,destino-49);
 			default:
 				tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
 				break;
 		}
-		
 	}while(origem != 27);
 }
 
@@ -242,100 +275,142 @@ void submenu(jogo solit, int indice){
 	}
 	destino = tela_le(jogo_tela(solit));
 	printw(" %c",destino);
-	if(indice == atoi(&destino)-1){
+	if(indice == destino-49){
 		tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
 		return;
 	}
 	switch(destino){
 		case '1': case '2': case '3': case '4': case '5': case '6': case '7':
-			xx(solit,indice,atoi(&destino)-1);
+			xx(solit,indice,destino-49);
 			break;
-		/*case 'r': case 'R':
-			xa(solit,0);
+		case 'r': case 'R':
+			xa(solit,indice,0);
 			break;
 		case 't': case 'T':
-			xa(solit,1);
+			xa(solit,indice,1);
 			break;
 		case 'y': case 'Y':
-			xa(solit,2);
+			xa(solit,indice,2);
 			break;
 		case 'u': case 'U':
-			xa(solit,3);
+			xa(solit,indice,3);
 			break;
 		default:
 			tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
-			break;*/
+			break;
 	}
 }
 
 void xx(jogo solit, int origem, int destino){
-
 	carta c, cd;
 	pilha aux = pilha_cria();
-	int i, cont=0, soma;
-	//char qtd = tela_le(jogo_tela(solit));
-	//printw(" %c",qtd);
-	//int qtdd = atoi(&qtd);
-
+	int soma;
 	if(pilha_vazia(solit->pilhas[destino])){
-		
-	}
-
-	/*for(i=0;i<qtdd;i++){
-		if(!pilha_vazia(solit->pilhas[origem]) && carta_aberta(c)){
-			c = pilha_remove_carta(solit->pilhas[origem]);
+		c = pilha_remove_carta(solit->pilhas[origem]);
+		while(carta_valor(c)!=13 && carta_aberta(c) && !pilha_vazia(solit->pilhas[origem])){
 			pilha_insere_carta(aux,c);
-			cont++;
+			c = pilha_remove_carta(solit->pilhas[origem]);
 		}
-	}
-	if(cont != qtdd){
-		while(!pilha_vazia(aux)){
-			c = pilha_remove_carta(aux);
+		if(carta_aberta(c)){
+			pilha_insere_carta(aux,c);
+		}else{
 			pilha_insere_carta(solit->pilhas[origem],c);
 		}
-		tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
-	}else{
 		c = pilha_remove_carta(aux);
-		if(pilha_vazia(solit->pilhas[destino])){
-			if(carta_valor(c) == 13){
-				while(!pilha_vazia(aux)){
-					pilha_insere_carta(solit->pilhas[destino],c);
-					c = pilha_remove_carta(aux);
-				}
+		if(carta_valor(c) == 13){
+			while(!pilha_vazia(aux)){
 				pilha_insere_carta(solit->pilhas[destino],c);
-				if(!pilha_vazia(solit->pilhas[origem])){
-					c = pilha_remove_carta(solit->pilhas[origem]);
-					carta_abre(c);
-					pilha_insere_carta(solit->pilhas[origem],c);
-				}
-				jogo_desenha(solit);
-			}else{
-				while(!pilha_vazia(aux)){
-					pilha_insere_carta(solit->pilhas[origem],c);
-					c = pilha_remove_carta(aux);
-				}
-				pilha_insere_carta(solit->pilhas[origem],c);
-				tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
+				c = pilha_remove_carta(aux);
 			}
+			pilha_insere_carta(solit->pilhas[destino],c);
+			if(!pilha_vazia(solit->pilhas[origem])){
+				c = pilha_remove_carta(solit->pilhas[origem]);
+				carta_abre(c);
+				pilha_insere_carta(solit->pilhas[origem],c);
+			}
+			jogo_desenha(solit);
 		}else{
-			cd = pilha_remove_carta(solit->pilhas[destino]);
-			soma = carta_naipe(c) + carta_naipe(cd);
-			if(carta_valor(c) == carta_valor(cd)-1 && carta_naipe(c) != carta_naipe(cd) && soma>=2 && soma<=4){
-				pilha_insere_carta(solit->pilhas[destino],cd);
-				while(!pilha_vazia(aux)){
-					pilha_insere_carta(solit->pilhas[destino],c);
-					c = pilha_remove_carta(aux);
-				}
-				pilha_insere_carta(solit->pilhas[destino],c);
-				jogo_desenha(solit);
-			}else{
-				while(!pilha_vazia(aux)){
-					pilha_insere_carta(solit->pilhas[origem],c);
-					c = pilha_remove_carta(aux);
-				}
+			while(!pilha_vazia(aux)){
 				pilha_insere_carta(solit->pilhas[origem],c);
-				tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
+				c = pilha_remove_carta(aux);
 			}
+			pilha_insere_carta(solit->pilhas[origem],c);
+			tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
 		}
-	}*/
+	}else{
+		c = pilha_remove_carta(solit->pilhas[origem]);
+		cd = pilha_remove_carta(solit->pilhas[destino]);
+		while(carta_valor(c)!=carta_valor(cd)-1 && carta_aberta(c) && !pilha_vazia(solit->pilhas[origem])){
+			pilha_insere_carta(aux,c);
+			c = pilha_remove_carta(solit->pilhas[origem]);
+		}
+		if(carta_aberta(c)){
+			pilha_insere_carta(aux,c);
+		}else{
+			pilha_insere_carta(solit->pilhas[origem],c);
+		}
+		c = pilha_remove_carta(aux);
+		soma = carta_naipe(c) + carta_naipe(cd);
+		if(carta_valor(c) == carta_valor(cd)-1 && carta_naipe(c) != carta_naipe(cd) && soma>=2 && soma<=4){
+			pilha_insere_carta(solit->pilhas[destino],cd);
+			while(!pilha_vazia(aux)){
+				pilha_insere_carta(solit->pilhas[destino],c);
+				c = pilha_remove_carta(aux);
+			}
+			pilha_insere_carta(solit->pilhas[destino],c);
+			if(!pilha_vazia(solit->pilhas[origem])){
+				c = pilha_remove_carta(solit->pilhas[origem]);
+				carta_abre(c);
+				pilha_insere_carta(solit->pilhas[origem],c);
+			}
+			jogo_desenha(solit);
+		}else{
+			while(!pilha_vazia(aux)){
+				pilha_insere_carta(solit->pilhas[origem],c);
+				c = pilha_remove_carta(aux);
+			}
+			pilha_insere_carta(solit->pilhas[origem],c);
+			tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
+		}
+	}
+	pilha_destroi(aux);
+}
+
+void xa(jogo solit, int origem, int destino){
+	carta c, cd;
+	c = pilha_remove_carta(solit->pilhas[origem]);
+	if(pilha_vazia(solit->ases[destino])){
+		if(carta_valor(c) == 1){
+			pilha_insere_carta(solit->ases[destino],c);
+			if(!pilha_vazia(solit->pilhas[origem])){
+				c = pilha_remove_carta(solit->pilhas[origem]);
+				carta_abre(c);
+				pilha_insere_carta(solit->pilhas[origem],c);
+			}
+			jogo_desenha(solit);
+		}else{
+			pilha_insere_carta(solit->pilhas[origem],c);
+			tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
+		}
+	}else{
+		cd = pilha_remove_carta(solit->ases[destino]);
+		if(carta_valor(c) == carta_valor(cd)+1 && carta_naipe(c) == carta_naipe(cd)){
+			pilha_insere_carta(solit->ases[destino],cd);
+			pilha_insere_carta(solit->ases[destino],c);
+			if(!pilha_vazia(solit->pilhas[origem])){
+				c = pilha_remove_carta(solit->pilhas[origem]);
+				carta_abre(c);
+				pilha_insere_carta(solit->pilhas[origem],c);
+			}
+			jogo_desenha(solit);
+		}else{
+			pilha_insere_carta(solit->pilhas[origem],c);
+			pilha_insere_carta(solit->ases[destino],cd);
+			tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
+		}
+	}
+}
+
+void ax(jogo solit, int origem, int destino){
+
 }
