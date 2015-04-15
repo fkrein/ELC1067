@@ -166,6 +166,7 @@ void menu(jogo solit){
 				destino = tela_le(jogo_tela(solit));
 				printw(" %c",destino);
 				ax(solit,0,destino-49);
+				break;
 			case 't': case 'T':
 				if(pilha_vazia(solit->ases[1])){
 					tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
@@ -174,6 +175,7 @@ void menu(jogo solit){
 				destino = tela_le(jogo_tela(solit));
 				printw(" %c",destino);
 				ax(solit,1,destino-49);
+				break;
 			case 'y': case 'Y':
 				if(pilha_vazia(solit->ases[2])){
 					tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
@@ -182,6 +184,7 @@ void menu(jogo solit){
 				destino = tela_le(jogo_tela(solit));
 				printw(" %c",destino);
 				ax(solit,2,destino-49);
+				break;
 			case 'u': case 'U':
 				if(pilha_vazia(solit->ases[3])){
 					tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
@@ -190,6 +193,7 @@ void menu(jogo solit){
 				destino = tela_le(jogo_tela(solit));
 				printw(" %c",destino);
 				ax(solit,3,destino-49);
+				break;
 			default:
 				tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
 				break;
@@ -412,5 +416,29 @@ void xa(jogo solit, int origem, int destino){
 }
 
 void ax(jogo solit, int origem, int destino){
-
+	carta c,cd;
+	int soma;
+	c = pilha_remove_carta(solit->ases[origem]);
+	if(destino>=1 && destino<=7){
+		if(pilha_vazia(solit->pilhas[destino])){
+			if(carta_valor(c) == 13){
+				pilha_insere_carta(solit->pilhas[destino],c);
+				jogo_desenha(solit);
+			}else{
+				tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
+			}
+		}else{
+			cd = pilha_remove_carta(solit->pilhas[destino]);
+			soma = carta_naipe(c) + carta_naipe(cd);
+			if(carta_valor(c) == carta_valor(cd)-1 && carta_naipe(c) != carta_naipe(cd) && soma>=2 && soma<=4){
+				pilha_insere_carta(solit->pilhas[destino],cd);
+				pilha_insere_carta(solit->pilhas[destino],c);
+				jogo_desenha(solit);
+			}else{
+				pilha_insere_carta(solit->pilhas[destino],cd);
+				pilha_insere_carta(solit->ases[origem],c);
+				tela_escreve_esquerdado(solit->tela," - Comando Invalido!",20);
+			}
+		}
+	}
 }
