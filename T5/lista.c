@@ -29,3 +29,73 @@
 #include "memo.h"
 
 /* implementa aqui sua estrutura lista_t duplamente encadeada */
+
+ptr* lista_cria(void){
+
+	ptr* pointer = (ptr*) memo_aloca(sizeof(ptr));
+	pointer->first = NULL;
+	pointer->last = NULL;
+	return pointer;
+
+}
+
+void lista_destroi(ptr* pointer){
+
+	memo_libera(pointer->first);
+	memo_libera(pointer);
+
+}
+
+ptr* lista_insere(ptr* pointer, int pos){
+
+	lista_t* novo = (lista_t*) memo_aloca(sizeof(lista_t));
+	if(pos == 1){
+		novo->prev = NULL;
+		novo->next = pointer->first;
+		pointer->first->prev = novo;
+		pointer->first = novo;
+		if(pointer->last == NULL){
+			pointer->last = novo;
+		}
+	}else{
+		novo->prev = lista_busca(pointer, pos-1);
+		novo->next = lista_busca(pointer, pos-1)->next;
+		if(lista_busca(pointer, pos-1)->next != NULL){
+			lista_busca(pointer, pos-1)->next->prev = novo;
+		}else{
+			pointer->last = novo;
+		}
+		lista_busca(pointer, pos-1)->next = novo;
+	}
+	return pointer;
+
+}
+
+lista_t* lista_busca(ptr* pointer, int pos){
+
+	int i;
+	lista_t* p = pointer->first;
+	for(i = 1; i < pos; i++){
+		p = p->next;
+	}
+	return p;
+	
+}
+
+ptr* lista_remove(ptr* pointer, int pos){
+	
+	lista_t* p = lista_busca(pointer, pos);
+	if(p->next != NULL){
+		p->next->prev = p->prev;
+	}else{
+		pointer->last = p->prev;
+	}
+	if(p->prev != NULL){
+		p->prev->next = p->next;
+	}else{
+		pointer->first = p->next;
+	}
+	memo_libera(p);
+	return pointer;
+
+}

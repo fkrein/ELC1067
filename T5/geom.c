@@ -32,7 +32,7 @@
 
 // retorna a distancia entre dois pontos
 float distancia(ponto_t a, ponto_t b){
-    return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2));
+    return sqrtf(powf(a.x - b.x, 2) + powf(a.y - b.y, 2));
 }
 
 // retorna true se o ponto estiver dentro do circulo, false caso contrario
@@ -58,9 +58,8 @@ bool intercr(circulo_t c, retangulo_t r){
     	|| distancia(ponto2, c.centro) <= c.raio || distancia(ponto3, c.centro) <= c.raio){
     		return true;
     	}
-    }else{
-    	return false;
     }
+    return false;
 }
 
 // retorna true se houver uma interseccao entre os dois retangulos

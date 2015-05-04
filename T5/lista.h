@@ -30,10 +30,24 @@
 #include <stdlib.h>
 #include "memo.h"
 
-typedef struct _lista {
-	/* */
-} lista_t;
+typedef struct _lista{
+	struct _lista* next;
+	struct _lista* prev;
+	char* text;
+}lista_t;
+
+typedef struct{
+	lista_t* first;
+	lista_t* last;
+	//int n; //questionar a necessidade (fahks)
+}ptr;
 
 /* implementa aqui sua estrutura lista_t duplamente encadeada */
+
+ptr* lista_cria(void);
+void lista_destroi(ptr* pointer);
+ptr* lista_insere(ptr* pointer, int pos);
+lista_t* lista_busca(ptr* pointer, int pos);
+ptr* lista_remove(ptr* pointer, int pos);
 
 #endif /* _LISTA_H_ */

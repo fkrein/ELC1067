@@ -33,8 +33,8 @@
 #include "texto.h"
 #include "memo.h"
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv){
+	
 	texto_t* texto;
 	texto = texto_inicia();
 	
