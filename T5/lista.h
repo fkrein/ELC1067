@@ -39,10 +39,7 @@ typedef struct _lista{
 typedef struct{
 	lista_t* first;
 	lista_t* last;
-	//int n; //questionar a necessidade (fahks)
 }ptr;
-
-/* implementa aqui sua estrutura lista_t duplamente encadeada */
 
 ptr* lista_cria(void);
 void lista_destroi(ptr* pointer);

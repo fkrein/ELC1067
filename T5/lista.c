@@ -28,19 +28,25 @@
 #include "lista.h"
 #include "memo.h"
 
-/* implementa aqui sua estrutura lista_t duplamente encadeada */
-
 ptr* lista_cria(void){
 
+	lista_t* novo = (lista_t*) memo_aloca(sizeof(lista_t));
+	novo->text = (char*) memo_aloca(sizeof(char));
+	novo->text[0] = '\0';
+	novo->prev = NULL;
+	novo->next = NULL;
+
 	ptr* pointer = (ptr*) memo_aloca(sizeof(ptr));
-	pointer->first = NULL;
-	pointer->last = NULL;
+	pointer->first = novo;
+	pointer->last = novo;
+
 	return pointer;
 
 }
 
 void lista_destroi(ptr* pointer){
 
+	memo_libera(pointer->first->text);
 	memo_libera(pointer->first);
 	memo_libera(pointer);
 
@@ -49,14 +55,13 @@ void lista_destroi(ptr* pointer){
 ptr* lista_insere(ptr* pointer, int pos){
 
 	lista_t* novo = (lista_t*) memo_aloca(sizeof(lista_t));
+	novo->text = (char*) memo_aloca(sizeof(char));
+	novo->text[0] = '\0';
 	if(pos == 1){
 		novo->prev = NULL;
 		novo->next = pointer->first;
 		pointer->first->prev = novo;
 		pointer->first = novo;
-		if(pointer->last == NULL){
-			pointer->last = novo;
-		}
 	}else{
 		novo->prev = lista_busca(pointer, pos-1);
 		novo->next = lista_busca(pointer, pos-1)->next;
@@ -95,6 +100,7 @@ ptr* lista_remove(ptr* pointer, int pos){
 	}else{
 		pointer->first = p->next;
 	}
+	memo_libera(p->text);
 	memo_libera(p);
 	return pointer;
 
