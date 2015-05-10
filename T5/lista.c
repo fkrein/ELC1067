@@ -32,7 +32,7 @@ ptr* lista_cria(void){
 
 	lista_t* novo = (lista_t*) memo_aloca(sizeof(lista_t));
 	novo->text = (char*) memo_aloca(sizeof(char));
-	novo->text[0] = '\0';
+	novo->text[0] = -1;
 	novo->prev = NULL;
 	novo->next = NULL;
 

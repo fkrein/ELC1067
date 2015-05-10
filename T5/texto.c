@@ -38,15 +38,15 @@
 /* estados para o campo texto */
 enum { nada, editando } estado;
 
-texto_t* texto_inicia(void)
-{
+texto_t* texto_inicia(void){
 	texto_t* t = (texto_t*)memo_aloca(sizeof(texto_t));
 	tamanho_t tam = { 600, 400 };	/* tamanho da tela */
 	
-	tela_inicializa(&t->tela, tam, "Editor teste");
+	tela_inicializa(&t->tela, tam, "Editor Supremo");
 	tela_limpa(&t->tela);
 
-	t->nlin = 0;
+	t->linhas = lista_cria();
+	t->nlin = 1;
 	t->lincur = 0;
 	t->colcur = 0;
 	t->lin1 = 0;
@@ -57,35 +57,36 @@ texto_t* texto_inicia(void)
 	return t;
 }
 
-void texto_destroi(texto_t* txt)
-{
+void texto_destroi(texto_t* txt){
+	while(txt->linhas->first != txt->linhas->first){
+		lista_remove(txt->linhas, 1);
+	}
 	tela_limpa(&txt->tela);
 	tela_finaliza(&txt->tela);
+	lista_destroi(txt->linhas);
 	memo_libera(txt);
 }
 
-tela_t* texto_tela(texto_t* txt)
-{
+tela_t* texto_tela(texto_t* txt){
 	assert( txt != NULL );
 	return &txt->tela;
 }
 
-void texto_desenha_cursor_tela(texto_t *txt)
-{
-	cor_t preto = {0.0, 0.0, 0.0};
+void texto_desenha_cursor_tela(texto_t *txt){
+	cor_t preto = {255.0, 255.0, 0.0};
 	tamanho_t tt;
 	ponto_t pt1, pt2;
 
 	/* ATENÇÃO: ajustar aqui o tamanho do texto onde o cursor está.
 	 * Isso é necessário pois cada caractere pode ter tamanhos diferentes
 	 * na horizontal.  */
-	{
-		char* texto = "nada, aperte CTRL+q para sair ou direcionais para cursor!";
-		char subtexto[60];
-		strncpy(subtexto, texto, txt->colcur*sizeof(char));
-		subtexto[txt->colcur] = '\0';
-		tt = tela_tamanho_texto(&txt->tela, subtexto);
-	}
+
+	char* texto = "nada, aperte CTRL+q para sair ou direcionais para cursor!";
+	char subtexto[60];
+	strncpy(subtexto, texto, txt->colcur);
+	subtexto[txt->colcur] = '\0';
+	tt = tela_tamanho_texto(&txt->tela, subtexto);
+
 	/* posicao x (horizontal) do cursor */
 	pt1.x = tt.larg + 1;
 	/* posicao y (vertical) do cursor */
@@ -96,8 +97,7 @@ void texto_desenha_cursor_tela(texto_t *txt)
 	tela_linha(&txt->tela, pt1, pt2);
 }
 
-void texto_desenha_tela(texto_t *txt)
-{
+void texto_desenha_tela(texto_t *txt){
 	cor_t cor;
 	char *texto;
 	tamanho_t tt;
@@ -111,9 +111,9 @@ void texto_desenha_tela(texto_t *txt)
 	tt = tela_tamanho_texto(&txt->tela, texto);
 	for(i = 1; i < 10; i++){
 		/* cores RGB da linha */
-		cor.r = (float)i/10;
-		cor.g = (float)i/10;
-		cor.b = (float)i/10;
+		cor.r = 0;
+		cor.g = 255;
+		cor.b = 0;
 
 		/* calcula posicao da nova linha */
 		pt.x = 1;
@@ -127,15 +127,13 @@ void texto_desenha_tela(texto_t *txt)
 	texto_desenha_cursor_tela(txt);
 }
 
-void texto_atualiza_tela(texto_t *txt)
-{
+void texto_atualiza_tela(texto_t *txt){
 	texto_desenha_tela(txt);
 	tela_mostra(texto_tela(txt));
 	tela_espera(30);
 }
 
-bool texto_processa_comandos(texto_t* txt)
-{
+bool texto_processa_comandos(texto_t* txt){
 	int tecla = tela_tecla(texto_tela(txt));
 	int modificador = tela_tecla_modificador(texto_tela(txt));
 	/* apertou CRTL + Q ? */
@@ -172,27 +170,48 @@ bool texto_processa_comandos(texto_t* txt)
 	return true;
 }
 
-void texto_move_esq(texto_t *txt)
-{
+void texto_move_esq(texto_t *txt){
 	/* ATENÇÃO: apenas exemplo. Mudar implementação */
 	txt->colcur--;
 }
 
-void texto_move_dir(texto_t *txt)
-{
+void texto_move_dir(texto_t *txt){
 	/* ATENÇÃO: apenas exemplo. Mudar implementação */
 	txt->colcur++;
 }
 
-void texto_move_baixo(texto_t *txt)
-{
+void texto_move_baixo(texto_t *txt){
 	/* ATENÇÃO: apenas exemplo. Mudar implementação */
 	txt->lincur++;
 }
 
-void texto_move_cima(texto_t *txt)
-{
+void texto_move_cima(texto_t *txt){
 	/* ATENÇÃO: apenas exemplo. Mudar implementação */
 	txt->lincur--;
 }
 
+void texto_le_arquivo(texto_t *txt, char *nome, FILE* file){
+
+	txt->nome = nome;
+	char c;
+	int col=0, lin=1;
+
+	txt->linhas = lista_insere(txt->linhas, 1);
+
+	while((c = fgetc(file)) != EOF){
+		if(c == '\n'){
+			printf("teste");
+			col = 0;
+			lin++;
+			txt->linhas = lista_insere(txt->linhas, lin);
+			continue;
+		}
+		memo_realoca(lista_busca(txt->linhas, lin)->text, strlen(lista_busca(txt->linhas, lin)->text)+sizeof(char));
+		lista_busca(txt->linhas, lin)->text[col] = c;
+		lista_busca(txt->linhas, lin)->text[col+1] = '\0';
+		col++;
+	}
+
+	txt->nlin = lin;
+
+}
