@@ -58,7 +58,7 @@ texto_t* texto_inicia(void){
 }
 
 void texto_destroi(texto_t* txt){
-	while(txt->linhas->first != txt->linhas->first){
+	while(txt->linhas->first != txt->linhas->last){
 		lista_remove(txt->linhas, 1);
 	}
 	tela_limpa(&txt->tela);
@@ -200,7 +200,6 @@ void texto_le_arquivo(texto_t *txt, char *nome, FILE* file){
 
 	while((c = fgetc(file)) != EOF){
 		if(c == '\n'){
-			printf("teste");
 			col = 0;
 			lin++;
 			txt->linhas = lista_insere(txt->linhas, lin);
@@ -213,5 +212,4 @@ void texto_le_arquivo(texto_t *txt, char *nome, FILE* file){
 	}
 
 	txt->nlin = lin;
-
 }
