@@ -52,7 +52,7 @@ int main(int argc, char **argv){
 	texto_le_arquivo(texto, argv[1], file);
 
 /* enquanto continua execução */
-	while(texto_processa_comandos(texto)){
+	while(texto_processa_comandos(texto, file, argv[1])){
 		texto_atualiza_tela(texto);
 	}
 	texto_destroi(texto);

@@ -35,7 +35,6 @@
 #include "memo.h"
 #include "lista.h"
 
-/* estados para o campo texto */
 enum { nada, editando } estado;
 
 texto_t* texto_inicia(void){
@@ -77,19 +76,13 @@ void texto_desenha_cursor_tela(texto_t *txt){
 	tamanho_t tt;
 	ponto_t pt1, pt2;
 
-	/* ATENÇÃO: ajustar aqui o tamanho do texto onde o cursor está.
-	 * Isso é necessário pois cada caractere pode ter tamanhos diferentes
-	 * na horizontal.  */
-
-	char* texto = "nada, aperte CTRL+q para sair ou direcionais para cursor!";
+	char* texto = lista_busca(txt->linhas, txt->lincur)->text;
 	char subtexto[60];
 	strncpy(subtexto, texto, txt->colcur);
 	subtexto[txt->colcur] = '\0';
 	tt = tela_tamanho_texto(&txt->tela, subtexto);
 
-	/* posicao x (horizontal) do cursor */
 	pt1.x = tt.larg + 1;
-	/* posicao y (vertical) do cursor */
 	pt1.y = txt->lincur * tt.alt;
 	pt2.x = pt1.x;
 	pt2.y = pt1.y + tt.alt;
@@ -107,20 +100,18 @@ void texto_desenha_tela(texto_t *txt){
 	/* limpa a tela. Comentar se ficar lento */
 	tela_limpa(&txt->tela);
 
-	texto = "nada, aperte CTRL+q para sair ou direcionais para cursor!";
-	tt = tela_tamanho_texto(&txt->tela, texto);
-	for(i = 1; i < 10; i++){
-		/* cores RGB da linha */
-		cor.r = 0;
-		cor.g = 255;
-		cor.b = 0;
+	cor.r = 0;
+	cor.g = 255;
+	cor.b = 0;
+	tela_cor(&txt->tela, cor);
+	
+	for(i = 1; i <= txt->nlin; i++){
+		texto = lista_busca(txt->linhas, i)->text;
+		tt = tela_tamanho_texto(&txt->tela, texto);
 
-		/* calcula posicao da nova linha */
 		pt.x = 1;
 		pt.y = (i - 1)*tt.alt + 1;
 
-		/* muda cor e desenha linha */
-		tela_cor(&txt->tela, cor);
 		tela_texto(&txt->tela, pt, texto);
 	}
 
@@ -133,31 +124,24 @@ void texto_atualiza_tela(texto_t *txt){
 	tela_espera(30);
 }
 
-bool texto_processa_comandos(texto_t* txt){
+bool texto_processa_comandos(texto_t* txt, FILE* file, char* arq){
 	int tecla = tela_tecla(texto_tela(txt));
 	int modificador = tela_tecla_modificador(texto_tela(txt));
-	/* apertou CRTL + Q ? */
 	if( tecla == ALLEGRO_KEY_Q && (modificador & ALLEGRO_KEYMOD_CTRL) ) {
-		printf("CTRL+Q SAIR\n");
+		return false;
+	}
+	if( tecla == ALLEGRO_EVENT_DISPLAY_CLOSE){
 		return false;
 	}
 	if( tecla == ALLEGRO_KEY_S && (modificador & ALLEGRO_KEYMOD_CTRL) ) {
-		printf("CTRL+S SALVAR e PARAR DE EDITAR\n");
-		/* muda estado na variável para não editar */
 		estado = nada;
+		fclose(file);
+		file = fopen(arq, "w+");
 	}
 	if( tecla == ALLEGRO_KEY_E && (modificador & ALLEGRO_KEYMOD_CTRL) ) {
-		printf("CTRL+S EDITAR\n");
-		/* muda estado na variável para editando */
 		estado = editando;
 	}
 
-	/* teclas direcionais 
-		ALLEGRO_KEY_LEFT
-		ALLEGRO_KEY_RIGHT
-		ALLEGRO_KEY_UP
-		ALLEGRO_KEY_DOWN
-	*/
 	if( tecla == ALLEGRO_KEY_LEFT )
 		texto_move_esq(txt);
 	if( tecla == ALLEGRO_KEY_RIGHT )
@@ -166,28 +150,57 @@ bool texto_processa_comandos(texto_t* txt){
 		texto_move_cima(txt);
 	if( tecla == ALLEGRO_KEY_DOWN )
 		texto_move_baixo(txt);
+	if( tecla == ALLEGRO_KEY_Q ){
+		printf("%c",ALLEGRO_KEY_Q);
+	}
+	
+	if(estado == editando){
+		if( tecla == ALLEGRO_KEY_BACKSPACE ){
+			texto_remove_char(txt);
+		}else{
+			texto_insere_char(txt, tecla);
+		}
+	}
 
 	return true;
 }
 
 void texto_move_esq(texto_t *txt){
-	/* ATENÇÃO: apenas exemplo. Mudar implementação */
-	txt->colcur--;
+	if(txt->colcur > 0){
+		txt->colcur--;
+	}else if(txt->lincur > 0){
+		txt->lincur--;
+		txt->colcur = strlen(lista_busca(txt->linhas, txt->lincur)->text);
+	}
 }
 
 void texto_move_dir(texto_t *txt){
-	/* ATENÇÃO: apenas exemplo. Mudar implementação */
-	txt->colcur++;
+	if(txt->colcur < strlen(lista_busca(txt->linhas, txt->lincur)->text)){
+		txt->colcur++;
+	}else if(txt->lincur < txt->nlin-1){
+		txt->lincur++;
+		txt->colcur = 0;
+	}
 }
 
 void texto_move_baixo(texto_t *txt){
-	/* ATENÇÃO: apenas exemplo. Mudar implementação */
-	txt->lincur++;
+	if(txt->lincur < txt->nlin-1){
+		txt->lincur++;
+	}
 }
 
 void texto_move_cima(texto_t *txt){
-	/* ATENÇÃO: apenas exemplo. Mudar implementação */
-	txt->lincur--;
+	if(txt->lincur > 0){
+		txt->lincur--;
+	}
+}
+
+void texto_insere_char(texto_t *txt, char c){
+
+}
+
+void texto_remove_char(texto_t *txt){
+
 }
 
 void texto_le_arquivo(texto_t *txt, char *nome, FILE* file){
@@ -200,16 +213,16 @@ void texto_le_arquivo(texto_t *txt, char *nome, FILE* file){
 
 	while((c = fgetc(file)) != EOF){
 		if(c == '\n'){
+			lista_busca(txt->linhas, lin)->text[col+1] = '\0';
 			col = 0;
 			lin++;
 			txt->linhas = lista_insere(txt->linhas, lin);
 			continue;
 		}
-		memo_realoca(lista_busca(txt->linhas, lin)->text, strlen(lista_busca(txt->linhas, lin)->text)+sizeof(char));
 		lista_busca(txt->linhas, lin)->text[col] = c;
-		lista_busca(txt->linhas, lin)->text[col+1] = '\0';
+		lista_busca(txt->linhas, lin)->text = memo_realoca(lista_busca(txt->linhas, lin)->text, strlen(lista_busca(txt->linhas, lin)->text)+sizeof(char));
 		col++;
 	}
 
-	txt->nlin = lin;
+	txt->nlin = lin-1;
 }

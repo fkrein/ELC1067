@@ -214,12 +214,12 @@ void tela_processa_eventos(tela_t *tela)
 	  /*case ALLEGRO_EVENT_KEY_DOWN: */
 	  case ALLEGRO_EVENT_KEY_CHAR:
 	    {
-#if 0
-	      const char* keyname = al_keycode_to_name(event.keyboard.keycode);
-	      printf("code %x modif %x char '%c' name '%s' (q=%d)\n", event.keyboard.keycode,
-		event.keyboard.modifiers, (char)event.keyboard.keycode, keyname, 'Q');
-#endif
-		tela->tecla = event.keyboard.keycode;
+
+	      //const char* keyname = al_keycode_to_name(event.keyboard.keycode);
+	      //printf("code %x modif %x char '%c' name '%s' (q=%d)\n", event.keyboard.keycode,
+		  //event.keyboard.modifiers, (char)event.keyboard.keycode, keyname, 'Q');
+        tela->tecla = event.keyboard.unichar;
+		//tela->tecla = event.keyboard.keycode;
 		tela->modif = event.keyboard.modifiers;
 		    break;
 	    }
@@ -245,14 +245,12 @@ void tela_processa_eventos(tela_t *tela)
 	   {
 	     break;
 	   }
-#if 0
 	  /* botao de fechar janela pressionado */
 	  case ALLEGRO_EVENT_DISPLAY_CLOSE:
-		  {
-			  return;
-			  break;
-		  }
-#endif
+	  {
+		  tela->tecla = ALLEGRO_EVENT_DISPLAY_CLOSE;
+		  break;
+	  }
 	  default:
 		  break;
 	}
