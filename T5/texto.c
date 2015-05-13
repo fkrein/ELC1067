@@ -45,7 +45,7 @@ texto_t* texto_inicia(void){
 	tela_limpa(&t->tela);
 
 	t->linhas = lista_cria();
-	t->nlin = 1;
+	t->nlin = 0;
 	t->lincur = 0;
 	t->colcur = 0;
 	t->lin1 = 0;
@@ -58,7 +58,7 @@ texto_t* texto_inicia(void){
 
 void texto_destroi(texto_t* txt){
 	while(txt->linhas->first != txt->linhas->last){
-		lista_remove(txt->linhas, 1);
+		txt->linhas = lista_remove(txt->linhas, 1);
 	}
 	tela_limpa(&txt->tela);
 	tela_finaliza(&txt->tela);
@@ -76,7 +76,7 @@ void texto_desenha_cursor_tela(texto_t *txt){
 	tamanho_t tt;
 	ponto_t pt1, pt2;
 
-	char* texto = lista_busca(txt->linhas, txt->lincur)->text;
+	char* texto = lista_busca(txt->linhas, txt->lincur+1)->text;
 	char subtexto[60];
 	strncpy(subtexto, texto, txt->colcur);
 	subtexto[txt->colcur] = '\0';
@@ -124,40 +124,41 @@ void texto_atualiza_tela(texto_t *txt){
 	tela_espera(30);
 }
 
-bool texto_processa_comandos(texto_t* txt, FILE* file, char* arq){
+bool texto_processa_comandos(texto_t* txt, char* arq){
+	int i, j;
 	int tecla = tela_tecla(texto_tela(txt));
+	int tecla2 = tela_tecla2(texto_tela(txt));
 	int modificador = tela_tecla_modificador(texto_tela(txt));
 	if( tecla == ALLEGRO_KEY_Q && (modificador & ALLEGRO_KEYMOD_CTRL) ) {
 		return false;
-	}
-	if( tecla == ALLEGRO_EVENT_DISPLAY_CLOSE){
+	}else if( tecla == ALLEGRO_EVENT_DISPLAY_CLOSE){
 		return false;
-	}
-	if( tecla == ALLEGRO_KEY_S && (modificador & ALLEGRO_KEYMOD_CTRL) ) {
+	}else if( tecla == ALLEGRO_KEY_S && (modificador & ALLEGRO_KEYMOD_CTRL) ) {
 		estado = nada;
+		FILE* file = fopen(arq, "w+");
+		for(i = 1; i <= txt->nlin; i++){
+			for(j = 0; j < strlen(lista_busca(txt->linhas, i)->text); j++){
+				fputc(lista_busca(txt->linhas, i)->text[j], file);
+			}
+			if(i != txt->nlin){
+				fputc('\n', file);
+			}
+		}
 		fclose(file);
-		file = fopen(arq, "w+");
-	}
-	if( tecla == ALLEGRO_KEY_E && (modificador & ALLEGRO_KEYMOD_CTRL) ) {
+	}else if( tecla == ALLEGRO_KEY_E && (modificador & ALLEGRO_KEYMOD_CTRL) ) {
 		estado = editando;
-	}
-
-	if( tecla == ALLEGRO_KEY_LEFT )
+	}else if( tecla2 == ALLEGRO_KEY_LEFT ){
 		texto_move_esq(txt);
-	if( tecla == ALLEGRO_KEY_RIGHT )
+	}else if( tecla2 == ALLEGRO_KEY_RIGHT ){
 		texto_move_dir(txt);
-	if( tecla == ALLEGRO_KEY_UP )
+	}else if( tecla2 == ALLEGRO_KEY_UP ){
 		texto_move_cima(txt);
-	if( tecla == ALLEGRO_KEY_DOWN )
+	}else if( tecla2 == ALLEGRO_KEY_DOWN ){
 		texto_move_baixo(txt);
-	if( tecla == ALLEGRO_KEY_Q ){
-		printf("%c",ALLEGRO_KEY_Q);
-	}
-	
-	if(estado == editando){
-		if( tecla == ALLEGRO_KEY_BACKSPACE ){
+	}else if(estado == editando){
+		if( tecla == 8 ){
 			texto_remove_char(txt);
-		}else{
+		}else if(tecla >= 1){
 			texto_insere_char(txt, tecla);
 		}
 	}
@@ -170,16 +171,18 @@ void texto_move_esq(texto_t *txt){
 		txt->colcur--;
 	}else if(txt->lincur > 0){
 		txt->lincur--;
-		txt->colcur = strlen(lista_busca(txt->linhas, txt->lincur)->text);
+		txt->colcur = strlen(lista_busca(txt->linhas, txt->lincur+1)->text);
 	}
 }
 
 void texto_move_dir(texto_t *txt){
-	if(txt->colcur < strlen(lista_busca(txt->linhas, txt->lincur)->text)){
+	if(txt->colcur < strlen(lista_busca(txt->linhas, txt->lincur+1)->text)){
 		txt->colcur++;
-	}else if(txt->lincur < txt->nlin-1){
-		txt->lincur++;
-		txt->colcur = 0;
+	}else if(txt->colcur == strlen(lista_busca(txt->linhas, txt->lincur+1)->text)){
+		if(txt->lincur < txt->nlin-1){
+			txt->lincur++;
+			txt->colcur = 0;
+		}
 	}
 }
 
@@ -187,42 +190,74 @@ void texto_move_baixo(texto_t *txt){
 	if(txt->lincur < txt->nlin-1){
 		txt->lincur++;
 	}
+	if(txt->colcur > strlen(lista_busca(txt->linhas, txt->lincur+1)->text)){
+		txt->colcur = strlen(lista_busca(txt->linhas, txt->lincur+1)->text);
+	}
 }
 
 void texto_move_cima(texto_t *txt){
 	if(txt->lincur > 0){
 		txt->lincur--;
 	}
+	if(txt->colcur > strlen(lista_busca(txt->linhas, txt->lincur+1)->text)){
+		txt->colcur = strlen(lista_busca(txt->linhas, txt->lincur+1)->text);
+	}
 }
 
 void texto_insere_char(texto_t *txt, char c){
-
+	int i;
+	if(c != '\r'){
+		lista_busca(txt->linhas, txt->lincur + 1)->text = memo_realoca
+		(lista_busca(txt->linhas, txt->lincur + 1)->text, strlen(lista_busca(txt->linhas, txt->lincur + 1)->text)+1);
+		for(i = strlen(lista_busca(txt->linhas, txt->lincur + 1)->text); i > txt->colcur; i--){
+			lista_busca(txt->linhas, txt->lincur + 1)->text[i] = lista_busca(txt->linhas, txt->lincur + 1)->text[i-1];
+		}
+		lista_busca(txt->linhas, txt->lincur + 1)->text[txt->colcur] = c;
+		txt->colcur++;
+	}else{
+		txt->linhas = lista_insere(txt->linhas, txt->lincur+2);
+		lista_busca(txt->linhas, txt->lincur+2)->text = memo_realoca(lista_busca(txt->linhas, txt->lincur+2)->text,
+		strlen(lista_busca(txt->linhas, txt->lincur+1)->text) - txt->colcur*sizeof(char));
+		for(i = txt->colcur; i < strlen(lista_busca(txt->linhas, txt->lincur+1)->text); i++){
+			lista_busca(txt->linhas, txt->lincur+2)->text[i-txt->colcur] = lista_busca(txt->linhas, txt->lincur+1)->text[i];
+		}
+		lista_busca(txt->linhas, txt->lincur+1)->text = 
+		memo_realoca(lista_busca(txt->linhas, txt->lincur+1)->text,	(txt->colcur + 1)*sizeof(char));
+		lista_busca(txt->linhas, txt->lincur+1)->text[txt->colcur+1] = '\0';
+	}
 }
 
 void texto_remove_char(texto_t *txt){
 
 }
 
-void texto_le_arquivo(texto_t *txt, char *nome, FILE* file){
+void texto_le_arquivo(texto_t *txt, char *nome){
 
 	txt->nome = nome;
 	char c;
 	int col=0, lin=1;
 
+	FILE *file = fopen(nome, "r+");
+	if(file == NULL){
+		file = fopen(nome, "w+");
+	}
+
 	txt->linhas = lista_insere(txt->linhas, 1);
 
 	while((c = fgetc(file)) != EOF){
 		if(c == '\n'){
-			lista_busca(txt->linhas, lin)->text[col+1] = '\0';
 			col = 0;
 			lin++;
 			txt->linhas = lista_insere(txt->linhas, lin);
-			continue;
+		}else{
+			lista_busca(txt->linhas, lin)->text = 
+			memo_realoca(lista_busca(txt->linhas, lin)->text, strlen(lista_busca(txt->linhas, lin)->text)+2*sizeof(char));
+			lista_busca(txt->linhas, lin)->text[col] = c;
+			lista_busca(txt->linhas, lin)->text[col+1] = '\0';
+			col++;
 		}
-		lista_busca(txt->linhas, lin)->text[col] = c;
-		lista_busca(txt->linhas, lin)->text = memo_realoca(lista_busca(txt->linhas, lin)->text, strlen(lista_busca(txt->linhas, lin)->text)+sizeof(char));
-		col++;
 	}
 
-	txt->nlin = lin-1;
+	txt->nlin = lin;
+	fclose(file);
 }

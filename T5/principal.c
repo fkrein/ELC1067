@@ -43,21 +43,16 @@ int main(int argc, char **argv){
 		exit(-1);
 	}
 
-	FILE *file = fopen(argv[1], "r+");
-	if(file == NULL){
-		file = fopen(argv[1], "w+");
-	}
-
 	texto_t* texto = texto_inicia();
-	texto_le_arquivo(texto, argv[1], file);
+	texto_le_arquivo(texto, argv[1]);
+	
 
 /* enquanto continua execução */
-	while(texto_processa_comandos(texto, file, argv[1])){
+	while(texto_processa_comandos(texto, argv[1])){
 		texto_atualiza_tela(texto);
 	}
 	texto_destroi(texto);
 
-	fclose(file);
 	memo_relatorio();
 
 	return 0;

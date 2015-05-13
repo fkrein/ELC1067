@@ -219,7 +219,7 @@ void tela_processa_eventos(tela_t *tela)
 	      //printf("code %x modif %x char '%c' name '%s' (q=%d)\n", event.keyboard.keycode,
 		  //event.keyboard.modifiers, (char)event.keyboard.keycode, keyname, 'Q');
         tela->tecla = event.keyboard.unichar;
-		//tela->tecla = event.keyboard.keycode;
+		tela->tecla2 = event.keyboard.keycode;
 		tela->modif = event.keyboard.modifiers;
 		    break;
 	    }
@@ -264,6 +264,15 @@ int tela_tecla(tela_t *tela)
     tela_processa_eventos(tela);
     tecla = tela->tecla;
     tela->tecla = 0;
+    return tecla;
+}
+
+int tela_tecla2(tela_t *tela)
+{
+    /* retorna a ultima tecla pressionada */
+    int tecla;
+    tecla = tela->tecla2;
+    tela->tecla2 = 0;
     return tecla;
 }
 
