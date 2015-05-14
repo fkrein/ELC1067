@@ -205,30 +205,33 @@ void texto_move_cima(texto_t *txt){
 }
 
 void texto_insere_char(texto_t *txt, char c){
-	int i;
-	if(c != '\r'){
+	int i, j;
+	if(c != 13){
 		lista_busca(txt->linhas, txt->lincur + 1)->text = memo_realoca
-		(lista_busca(txt->linhas, txt->lincur + 1)->text, strlen(lista_busca(txt->linhas, txt->lincur + 1)->text)+1);
-		for(i = strlen(lista_busca(txt->linhas, txt->lincur + 1)->text); i > txt->colcur; i--){
-			lista_busca(txt->linhas, txt->lincur + 1)->text[i] = lista_busca(txt->linhas, txt->lincur + 1)->text[i-1];
+		(lista_busca(txt->linhas, txt->lincur + 1)->text, strlen(lista_busca(txt->linhas, txt->lincur + 1)->text)+2);
+		for(i = strlen(lista_busca(txt->linhas, txt->lincur + 1)->text); i >= txt->colcur; i--){
+			lista_busca(txt->linhas, txt->lincur + 1)->text[i+1] = lista_busca(txt->linhas, txt->lincur + 1)->text[i];
 		}
 		lista_busca(txt->linhas, txt->lincur + 1)->text[txt->colcur] = c;
 		txt->colcur++;
 	}else{
 		txt->linhas = lista_insere(txt->linhas, txt->lincur+2);
 		lista_busca(txt->linhas, txt->lincur+2)->text = memo_realoca(lista_busca(txt->linhas, txt->lincur+2)->text,
-		strlen(lista_busca(txt->linhas, txt->lincur+1)->text) - txt->colcur*sizeof(char));
-		for(i = txt->colcur; i < strlen(lista_busca(txt->linhas, txt->lincur+1)->text); i++){
-			lista_busca(txt->linhas, txt->lincur+2)->text[i-txt->colcur] = lista_busca(txt->linhas, txt->lincur+1)->text[i];
+		strlen(lista_busca(txt->linhas, txt->lincur+1)->text) - txt->colcur*sizeof(char) + 1);
+		for(i = txt->colcur, j = 0; i < strlen(lista_busca(txt->linhas, txt->lincur+1)->text) + 1; i++, j++){
+			lista_busca(txt->linhas, txt->lincur+2)->text[j] = lista_busca(txt->linhas, txt->lincur+1)->text[i];
 		}
 		lista_busca(txt->linhas, txt->lincur+1)->text = 
 		memo_realoca(lista_busca(txt->linhas, txt->lincur+1)->text,	(txt->colcur + 1)*sizeof(char));
-		lista_busca(txt->linhas, txt->lincur+1)->text[txt->colcur+1] = '\0';
+		lista_busca(txt->linhas, txt->lincur+1)->text[txt->colcur] = '\0';
+		txt->colcur = 0;
+		txt->lincur++;
+		txt->nlin++;
 	}
 }
 
 void texto_remove_char(texto_t *txt){
-
+	
 }
 
 void texto_le_arquivo(texto_t *txt, char *nome){
@@ -248,7 +251,7 @@ void texto_le_arquivo(texto_t *txt, char *nome){
 		if(c == '\n'){
 			col = 0;
 			lin++;
-			txt->linhas = lista_insere(txt->linhas, lin);
+				txt->linhas = lista_insere(txt->linhas, lin);
 		}else{
 			lista_busca(txt->linhas, lin)->text = 
 			memo_realoca(lista_busca(txt->linhas, lin)->text, strlen(lista_busca(txt->linhas, lin)->text)+2*sizeof(char));
