@@ -49,6 +49,12 @@ int main(int argc, char **argv){
 
 /* enquanto continua execução */
 	while(texto_processa_comandos(texto, argv[1])){
+		if(texto->lin1 > texto->lincur){
+			texto->lin1 = texto->lincur;
+		}
+		if(texto->lin1 < texto->lincur - 25){
+			texto->lin1++;
+		}
 		texto_atualiza_tela(texto);
 	}
 	texto_destroi(texto);

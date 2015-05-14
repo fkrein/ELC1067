@@ -82,8 +82,8 @@ void texto_desenha_cursor_tela(texto_t *txt){
 	subtexto[txt->colcur] = '\0';
 	tt = tela_tamanho_texto(&txt->tela, subtexto);
 
-	pt1.x = tt.larg + 1;
-	pt1.y = txt->lincur * tt.alt;
+	pt1.x = tt.larg/**txt->colcur*/ + 1;
+	pt1.y = (txt->lincur - txt->lin1) * tt.alt/* + txt->lin1*/;
 	pt2.x = pt1.x;
 	pt2.y = pt1.y + tt.alt;
 	tela_cor(&txt->tela, preto);
@@ -96,6 +96,7 @@ void texto_desenha_tela(texto_t *txt){
 	tamanho_t tt;
 	ponto_t pt;
 	int i;
+	int lin1 = txt->lin1 + 1;
 	
 	/* limpa a tela. Comentar se ficar lento */
 	tela_limpa(&txt->tela);
@@ -105,14 +106,15 @@ void texto_desenha_tela(texto_t *txt){
 	cor.b = 0;
 	tela_cor(&txt->tela, cor);
 	
-	for(i = 1; i <= txt->nlin; i++){
-		texto = lista_busca(txt->linhas, i)->text;
+	for(i = 1; lista_busca(txt->linhas, lin1)->next != NULL; i++){
+		texto = lista_busca(txt->linhas, lin1)->text/*+txt->col1*/;
 		tt = tela_tamanho_texto(&txt->tela, texto);
 
 		pt.x = 1;
 		pt.y = (i - 1)*tt.alt + 1;
 
 		tela_texto(&txt->tela, pt, texto);
+		lin1++;
 	}
 
 	texto_desenha_cursor_tela(txt);
@@ -231,7 +233,28 @@ void texto_insere_char(texto_t *txt, char c){
 }
 
 void texto_remove_char(texto_t *txt){
-	
+	int i, j;
+	if(txt->colcur == 0){
+		if(txt->lincur > 0){
+			lista_busca(txt->linhas, txt->lincur)->text = memo_realoca(lista_busca(txt->linhas, txt->lincur)->text,
+			strlen(lista_busca(txt->linhas, txt->lincur)->text)+strlen(lista_busca(txt->linhas, txt->lincur+1)->text)+1);
+			txt->colcur = strlen(lista_busca(txt->linhas, txt->lincur)->text);
+			for(i = 0, j = strlen(lista_busca(txt->linhas, txt->lincur)->text);
+			i < strlen(lista_busca(txt->linhas, txt->lincur+1)->text)+1; i++, j++){
+				lista_busca(txt->linhas, txt->lincur)->text[j] = lista_busca(txt->linhas, txt->lincur+1)->text[i];
+			}
+			lista_remove(txt->linhas, txt->lincur+1);
+			txt->lincur--;
+			txt->nlin--;
+		}
+	}else{
+		for(i = txt->colcur - 1; i < strlen(lista_busca(txt->linhas, txt->lincur+1)->text); i++){
+			lista_busca(txt->linhas, txt->lincur+1)->text[i] = lista_busca(txt->linhas, txt->lincur+1)->text[i+1];
+		}
+		lista_busca(txt->linhas, txt->lincur+1)->text = 
+		memo_realoca(lista_busca(txt->linhas, txt->lincur+1)->text, strlen(lista_busca(txt->linhas, txt->lincur+1)->text)+1);
+		txt->colcur--;
+	}
 }
 
 void texto_le_arquivo(texto_t *txt, char *nome){
