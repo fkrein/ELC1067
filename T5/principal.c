@@ -55,6 +55,12 @@ int main(int argc, char **argv){
 		if(texto->lin1 < texto->lincur - 25){
 			texto->lin1++;
 		}
+		if(texto->col1 > texto->colcur){
+			texto->col1 = texto->colcur;
+		}
+		if(texto->col1 < texto->colcur - 73){
+			texto->col1++;
+		}
 		texto_atualiza_tela(texto);
 	}
 	texto_destroi(texto);

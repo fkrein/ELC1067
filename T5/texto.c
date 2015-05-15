@@ -75,15 +75,21 @@ void texto_desenha_cursor_tela(texto_t *txt){
 	cor_t preto = {255.0, 255.0, 0.0};
 	tamanho_t tt;
 	ponto_t pt1, pt2;
+	char* subtexto;
 
-	char* texto = lista_busca(txt->linhas, txt->lincur+1)->text;
-	char subtexto[60];
-	strncpy(subtexto, texto, txt->colcur);
-	subtexto[txt->colcur] = '\0';
+	char* texto = lista_busca(txt->linhas, txt->lincur+1)->text + txt->col1;
+	if(txt->colcur - txt->col1 > 0){
+		subtexto = memo_aloca(txt->colcur - txt->col1 + 1);
+		strncpy(subtexto, texto, txt->colcur - txt->col1);
+		subtexto[txt->colcur - txt->col1] = '\0';
+	}else{
+		subtexto = memo_aloca(1);
+		subtexto[0] = '\0';
+	}
 	tt = tela_tamanho_texto(&txt->tela, subtexto);
 
-	pt1.x = tt.larg/**txt->colcur*/ + 1;
-	pt1.y = (txt->lincur - txt->lin1) * tt.alt/* + txt->lin1*/;
+	pt1.x = tt.larg + 1;
+	pt1.y = (txt->lincur - txt->lin1) * tt.alt;
 	pt2.x = pt1.x;
 	pt2.y = pt1.y + tt.alt;
 	tela_cor(&txt->tela, preto);
@@ -107,7 +113,7 @@ void texto_desenha_tela(texto_t *txt){
 	tela_cor(&txt->tela, cor);
 	
 	for(i = 1; lista_busca(txt->linhas, lin1)->next != NULL; i++){
-		texto = lista_busca(txt->linhas, lin1)->text/*+txt->col1*/;
+		texto = lista_busca(txt->linhas, lin1)->text + txt->col1;
 		tt = tela_tamanho_texto(&txt->tela, texto);
 
 		pt.x = 1;
