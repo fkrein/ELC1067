@@ -10,20 +10,12 @@ arv_t* arv_cria(op_t op){
 	return novo;
 }
 
-arv_t* arv_insere_esquerda(arv_t* arv, op_t op){
-	arv_t* novo = (arv_t*) memo_aloca(sizeof(arv_t));
-	novo->esq = NULL;
-	novo->dir = NULL;
-	novo->dado = op;
+arv_t* arv_insere_esquerda(arv_t* arv, arv_t* novo){
 	arv->esq = novo;
 	return arv;
 }
 
-arv_t* arv_insere_direita(arv_t* arv, op_t op){
-	arv_t* novo = (arv_t*) memo_aloca(sizeof(arv_t));
-	novo->esq = NULL;
-	novo->dir = NULL;
-	novo->dado = op;
+arv_t* arv_insere_direita(arv_t* arv, arv_t* novo){
 	arv->dir = novo;
 	return arv;
 }

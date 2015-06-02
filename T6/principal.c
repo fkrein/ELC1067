@@ -36,18 +36,29 @@
 #include "pilha.h"
 
 int main(void){
+
+	double operando;
+	op_t oprd;
+	arv_t* elemento;
+	arv_t* removido;
+	pilha_t* pilha = pilha_cria();
+
 	char c;
 	int length, index = 0;
 	char* str = (char*) memo_aloca(sizeof(char));
 	str[0] = '\0';
 	char* aux = (char*) memo_aloca(sizeof(char));
 	aux[0] = '\0';
+
+	//ler dinamicamente a equação
 	while((c = getchar()) != '\n'){
 		length = strlen(str);
 		str = memo_realoca(str, length + 2);
 		str[length] = c;
 		str[length + 1] = '\0';
 	}
+
+
 	while(str[index] != '\0'){
 		while(str[index] != ' ' && str[index] != '\0'){
 			length = strlen(aux);
@@ -56,12 +67,35 @@ int main(void){
 			aux[length + 1] = '\0';
 			index++;
 		}
-		puts(aux);
+		length = 0;
+		if(aux[0] >= '0' && aux[0] <= '9'){
+			operando = atof(aux);
+			oprd.tipo = OPERANDO;
+			oprd.u.operando = operando;
+			elemento = arv_cria(oprd);
+		}else{
+			oprd.tipo = OPERADOR;
+			oprd.u.operador = aux[0];
+			elemento = arv_cria(oprd);
+			removido = pilha_remove(pilha);
+			arv_insere_direita(elemento, removido);
+			removido = pilha_remove(pilha);
+			arv_insere_esquerda(elemento, removido);
+		}
+		pilha_insere(pilha, oprd);
+
 		aux = memo_realoca(aux, sizeof(char));
 		aux[0] = '\0';
 
 		index++;
 	}
+
+	removido = pilha_remove(pilha);
+
+	arv_imprime_pre_ordem(removido);
+	arv_imprime_em_ordem(removido);
+	arv_imprime_pos_ordem(removido);
+
 	// /* exemplo simples de árvore */
 	// arv_t* raiz;
 	// op_t soma, n1, n2;
