@@ -2,7 +2,7 @@
 #include "memo.h"
 
 pilha_t *pilha_cria(void){
-	pilha_t* pilha = (pilha_t*) malloc(sizeof(pilha_t));
+	pilha_t* pilha = (pilha_t*) memo_aloca(sizeof(pilha_t));
 	pilha->topo = NULL;
 	return pilha;
 }

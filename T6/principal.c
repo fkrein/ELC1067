@@ -102,6 +102,8 @@ int main(void){
 	arv_imprime_pos_ordem(removido);
 	printf("\n");
 
+	memo_libera(str);
+	memo_libera(aux);
 	arv_destroi(removido);
 	memo_relatorio();
 	return 0;
