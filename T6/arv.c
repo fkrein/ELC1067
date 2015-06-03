@@ -25,7 +25,7 @@ void arv_imprime_pre_ordem(arv_t* arv){
 		if(arv->dado.tipo == OPERADOR){
 			printf("%c ", arv->dado.u.operador);
 		}else{
-			printf("%f ", arv->dado.u.operando);
+			printf("%.2f ", arv->dado.u.operando);
 		}
 		arv_imprime_pre_ordem(arv->esq);
 		arv_imprime_pre_ordem(arv->dir);
@@ -34,24 +34,26 @@ void arv_imprime_pre_ordem(arv_t* arv){
 
 void arv_imprime_em_ordem(arv_t* arv){
 	if(arv != NULL){
-		arv_imprime_pre_ordem(arv->esq);
+		printf("(");
+		arv_imprime_em_ordem(arv->esq);
 		if(arv->dado.tipo == OPERADOR){
-			printf("%c ", arv->dado.u.operador);
+			printf("%c", arv->dado.u.operador);
 		}else{
-			printf("%f ", arv->dado.u.operando);
+			printf("%.2f", arv->dado.u.operando);
 		}
-		arv_imprime_pre_ordem(arv->dir);
+		arv_imprime_em_ordem(arv->dir);
+		printf(")");
 	}
 }
 
 void arv_imprime_pos_ordem(arv_t* arv){
 	if(arv != NULL){
-		arv_imprime_pre_ordem(arv->esq);
-		arv_imprime_pre_ordem(arv->dir);
+		arv_imprime_pos_ordem(arv->esq);
+		arv_imprime_pos_ordem(arv->dir);
 		if(arv->dado.tipo == OPERADOR){
 			printf("%c ", arv->dado.u.operador);
 		}else{
-			printf("%f ", arv->dado.u.operando);
+			printf("%.2f ", arv->dado.u.operando);
 		}
 	}
 }

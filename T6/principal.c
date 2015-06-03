@@ -68,12 +68,8 @@ int main(void){
 			index++;
 		}
 		length = 0;
-		if(aux[0] >= '0' && aux[0] <= '9'){
-			operando = atof(aux);
-			oprd.tipo = OPERANDO;
-			oprd.u.operando = operando;
-			elemento = arv_cria(oprd);
-		}else{
+
+		if(aux[0] == '+' || aux[0] == '-' || aux[0] == '*' || aux[0] == '/' || aux[0] == '%'){
 			oprd.tipo = OPERADOR;
 			oprd.u.operador = aux[0];
 			elemento = arv_cria(oprd);
@@ -81,8 +77,13 @@ int main(void){
 			arv_insere_direita(elemento, removido);
 			removido = pilha_remove(pilha);
 			arv_insere_esquerda(elemento, removido);
+		}else{
+			operando = atof(aux);
+			oprd.tipo = OPERANDO;
+			oprd.u.operando = operando;
+			elemento = arv_cria(oprd);
 		}
-		pilha_insere(pilha, oprd);
+		pilha_insere(pilha, elemento);
 
 		aux = memo_realoca(aux, sizeof(char));
 		aux[0] = '\0';
@@ -92,38 +93,16 @@ int main(void){
 
 	removido = pilha_remove(pilha);
 
+	pilha_destroi(pilha);
+
 	arv_imprime_pre_ordem(removido);
+	printf("\n");
 	arv_imprime_em_ordem(removido);
+	printf("\n");
 	arv_imprime_pos_ordem(removido);
+	printf("\n");
 
-	// /* exemplo simples de árvore */
-	// arv_t* raiz;
-	// op_t soma, n1, n2;
-	// pilha_t* pilha;
-
-	// /* inicia expressão */
-	// /* operador + */
-	// soma.tipo = OPERADOR;
-	// soma.u.operador = '+';
-	// /* primeiro operando */
-	// n1.tipo = OPERANDO;
-	// n1.u.operando = 1.0;
-	// /* segundo operando */
-	// n2.tipo = OPERANDO;
-	// n2.u.operando = 2.0;
-
-	// /* cria uma árvore */
-	// raiz = arv_cria( soma );
-	// raiz = arv_insere_esquerda( raiz, n1 );
-	// raiz = arv_insere_direita( raiz, n2 );
-
-	// /* simples uso da pilha */
-	// pilha = pilha_cria();
-	// pilha_insere( pilha, raiz );
-	// pilha_destroi( pilha );
-
-	// /* destroi árvore */
-	// arv_destroi( raiz );
+	arv_destroi(removido);
 	memo_relatorio();
 	return 0;
 }
