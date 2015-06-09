@@ -65,3 +65,24 @@ void arv_destroi(arv_t* arv){
 		memo_libera(arv);
 	}
 }
+
+double calcula(arv_t* arv){
+	if(arv->dado.tipo == OPERANDO){
+		return arv->dado.u.operando;
+	}
+	switch(arv->dado.u.operador){
+		case '+':
+			return calcula(arv->esq) + calcula(arv->dir);
+			break;
+		case '-':
+			return calcula(arv->esq) - calcula(arv->dir);
+			break;
+		case '*':
+			return calcula(arv->esq) * calcula(arv->dir);
+			break;
+		case '/':
+			return calcula(arv->esq) / calcula(arv->dir);
+			break;
+	}
+	return 0;
+}

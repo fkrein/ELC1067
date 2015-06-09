@@ -69,7 +69,7 @@ int main(void){
 		}
 		length = 0;
 
-		if(aux[0] == '+' || aux[0] == '-' || aux[0] == '*' || aux[0] == '/' || aux[0] == '%'){
+		if(aux[0] == '+' || aux[0] == '-' || aux[0] == '*' || aux[0] == '/'){
 			oprd.tipo = OPERADOR;
 			oprd.u.operador = aux[0];
 			elemento = arv_cria(oprd);
@@ -101,6 +101,7 @@ int main(void){
 	printf("\n");
 	arv_imprime_pos_ordem(removido);
 	printf("\n");
+	printf("Resultado da operação: %.2f\n", calcula(removido));
 
 	memo_libera(str);
 	memo_libera(aux);
