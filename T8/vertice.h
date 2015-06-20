@@ -40,4 +40,6 @@ typedef struct vertice {
 	struct lista* adjacentes; /* lista com os vértices adjacentes (vizinhos) */
 } vertice_t;
 
+void vertice_insere_aresta(vertice_t* v1, vertice_t* v2);
+
 #endif /* _VERTICE_H_ */
