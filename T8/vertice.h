@@ -28,12 +28,16 @@
  */
 
 #include <stdlib.h>
+#include "lista.h"
 
 /* tipo vértice inserido na lista */
+
+struct lista;
+
 typedef struct vertice {
 	char* chave;         /* chave identificador */
 	char* nome;          /* nome do vértice */
-	lista_t* adjacentes; /* lista com os vértices adjacentes (vizinhos) */
+	struct lista* adjacentes; /* lista com os vértices adjacentes (vizinhos) */
 } vertice_t;
 
 #endif /* _VERTICE_H_ */
