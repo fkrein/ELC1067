@@ -20,10 +20,10 @@ lista_t* lista_insere_vertice(lista_t* list, struct vertice* v){
 
 vertice_t* lista_busca_vertice(lista_t* list, char* chave){
 	lista_t* cpy = list;
-	while(strcmp(chave, cpy->vert->chave)){
+	while(strcmp(chave, cpy->vert->chave) && cpy != NULL){
 		cpy = cpy->prox;
 	}
-	return cpy->vert;
+	return cpy == NULL?NULL:cpy->vert;
 }
 
 void lista_imprime(lista_t* list){
