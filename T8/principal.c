@@ -45,8 +45,11 @@ int main(int argc, char* argv[]){
 		cont++;
 	}
 	grafo_imprime(grafo);
+	grafo_destroi(grafo);
 
 	fclose(file);
+
+	memo_relatorio();
 
 	exit(0);
 }
