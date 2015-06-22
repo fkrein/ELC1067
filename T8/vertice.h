@@ -41,5 +41,6 @@ typedef struct vertice {
 } vertice_t;
 
 void vertice_insere_aresta(vertice_t* v1, vertice_t* v2);
+struct lista* vertice_remove_aresta(struct lista* list);
 
 #endif /* _VERTICE_H_ */

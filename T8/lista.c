@@ -35,10 +35,14 @@ void lista_imprime(lista_t* list){
 }
 
 lista_t* lista_remove_vertice(lista_t* list){
-	lista_t* cpy = list->prox;
-	memo_libera(list->vert->chave);
-	memo_libera(list->vert->nome);
-	memo_libera(list->vert);
+	vertice_t* cpy = list->vert;
+	lista_t* cpy2 = list->prox;
+	while(cpy->adjacentes != NULL){
+		cpy->adjacentes = vertice_remove_aresta(cpy->adjacentes);
+	}
+	memo_libera(cpy->chave);
+	memo_libera(cpy->nome);
+	memo_libera(cpy);
 	memo_libera(list);
-	return cpy;
+	return cpy2;
 }

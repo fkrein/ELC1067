@@ -29,3 +29,9 @@ void vertice_insere_aresta(vertice_t* v1, vertice_t* v2){
 		cpy->prox = new;
 	}
 }
+
+struct lista* vertice_remove_aresta(struct lista* list){
+	lista_t* cpy = list->prox;
+	memo_libera(list);
+	return cpy;
+}
