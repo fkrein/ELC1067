@@ -16,7 +16,9 @@ lista.o: lista.c lista.h
 
 grafo.o: grafo.c grafo.h
 
-grafo: principal.o memo.o vertice.o lista.o grafo.o
+fila.o: fila.c fila.h
+
+grafo: principal.o memo.o vertice.o lista.o grafo.o fila.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 	
 clean:

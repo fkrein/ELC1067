@@ -64,4 +64,8 @@ void grafo_imprime(grafo_t* g);
 /* destroi e libera memória de um grafo */
 void grafo_destroi(grafo_t* g);
 
+void grafo_busca_largura(grafo_t* G, vertice_t* s);
+
+void grafo_caminho_curto(grafo_t* G, char* fonte, char* destino);
+
 #endif /* _GRAFO_H_ */
