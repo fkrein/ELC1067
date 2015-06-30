@@ -45,12 +45,28 @@ void grafo_destroi(grafo_t* g){
 
 void grafo_busca_largura(grafo_t* G, vertice_t* s){
 	lista_t* cpy = G->vertices;
+	vertice_t* u;
+	lista_t* v;
 	while(cpy != NULL){
 		cpy->vert->cor = BRANCO;
 		cpy = cpy->prox;
 	}
 	fila_t* Q = fila_cria();
 	Q = fila_insere(Q, s);
+	while(!fila_vazia(Q)){
+		u = fila_remove(Q);
+		v = u->adjacentes;
+		while(v != NULL){
+			if(v->vert->cor == BRANCO){
+				v->vert->cor = CINZA;
+				v->vert->distancia = u->distancia + 1;
+				v->vert->ant = u;
+				Q = fila_insere(Q, v->vert);
+			}
+			v = v->prox;
+		}
+		u->cor = PRETO;
+	}
 
 }
 
