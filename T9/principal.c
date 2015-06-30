@@ -13,10 +13,10 @@ int main(int argc, char* argv[]){
 	char fv2[TAM_CHAVE + 1];
 	vertice_t* vert;
 
-	if(argc < 2){
+	if(argc < 4){
 		printf("Too few arguments!\n");
 		exit(1);
-	}else if(argc > 2){
+	}else if(argc > 4){
 		printf("Too many arguments!\n");
 		exit(1);
 	}
@@ -45,10 +45,18 @@ int main(int argc, char* argv[]){
 		cont++;
 	}
 	grafo_imprime(grafo);
+
+	printf("\n");
+	vert = grafo_busca_vertice(grafo, argv[2]);
+	grafo_busca_largura(grafo, vert);
+	grafo_caminho_curto(grafo, argv[2], argv[3]);
+	printf("( %d cidades de distancia )", grafo_busca_vertice(grafo, argv[3])->distancia);
+
 	grafo_destroi(grafo);
 
 	fclose(file);
 
+	printf("\n");
 	memo_relatorio();
 
 	exit(0);

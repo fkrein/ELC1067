@@ -11,3 +11,4 @@ fila_t* fila_cria(void);
 fila_t* fila_insere(fila_t* Q, vertice_t* s);
 bool fila_vazia(fila_t* Q);
 vertice_t* fila_remove(fila_t* Q);
+void fila_destroi(fila_t* Q);

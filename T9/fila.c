@@ -30,6 +30,13 @@ vertice_t* fila_remove(fila_t* Q){
 	lista_t* cpy = Q->first;
 	vertice_t* cpy2 = cpy->vert;
 	Q->first = Q->first->prox;
+	if(Q->first == NULL){
+		Q->last = NULL;
+	}
 	memo_libera(cpy);
 	return cpy2;
+}
+
+void fila_destroi(fila_t* Q){
+	memo_libera(Q);	
 }

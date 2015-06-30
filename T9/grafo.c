@@ -67,20 +67,20 @@ void grafo_busca_largura(grafo_t* G, vertice_t* s){
 		}
 		u->cor = PRETO;
 	}
-
+	fila_destroi(Q);
 }
 
 void grafo_caminho_curto(grafo_t* G, char* fonte, char* destino){
 	vertice_t* s = grafo_busca_vertice(G, fonte);
 	vertice_t* v = grafo_busca_vertice(G, destino);
 	if(s == v){
-		printf("%s ", s->nome);
+		printf("%s -> ", s->nome);
 		return;
 	}
 	if(v->ant == NULL){
 		printf("Nao existe caminho de %s a %s\n", s->nome, v->nome);
 	} else {
 		grafo_caminho_curto( G, fonte, v->ant->chave );
-		printf("%s ", v->nome);
+		printf("%s -> ", v->nome);
 	}
 }
